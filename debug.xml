@@ -18,11 +18,10 @@
 
     <entry key='mail.debug'>true</entry>
 
-    <entry key='database.driver'>org.h2.Driver</entry>
-    <entry key='database.url'>jdbc:h2:./target/database</entry>
-    <entry key='database.user'>sa</entry>
-    <entry key='database.password'></entry>
-
+    <entry key='database.driver'>com.mysql.cj.jdbc.Driver</entry>
+<entry key='database.url'>jdbc:mysql://137.184.85.144:4406/traccar?serverTimezone=UTC&amp;useSSL=false&amp;allowPublicKeyRetrieval=true</entry>
+<entry key='database.user'>physeter</entry>
+<entry key='database.password'>Ph15eter$2025$R</entry>
     <!--<entry key='server.instantAcknowledgement'>true</entry>
     <entry key='server.buffering.threshold'>5000</entry>-->
 
