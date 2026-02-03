@@ -30,13 +30,18 @@ import org.traccar.model.Event;
 import org.traccar.model.Geofence;
 import org.traccar.model.Maintenance;
 import org.traccar.model.Position;
+import org.traccar.model.User;
 import org.traccar.notification.MessageException;
+import org.traccar.notification.NotificationFormatter;
+import org.traccar.model.NotificationPush;
+import org.traccar.notificators.Notificator;
 import org.traccar.notification.NotificatorManager;
 import org.traccar.session.cache.CacheManager;
 import org.traccar.storage.Storage;
 import org.traccar.storage.StorageException;
 import org.traccar.storage.query.Columns;
 import org.traccar.storage.query.Request;
+import org.traccar.notification.NotificationMessage;
 
 import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
@@ -57,6 +62,7 @@ public class NotificationManager {
     private final EventForwarder eventForwarder;
     private final NotificatorManager notificatorManager;
     private final Geocoder geocoder;
+    private final NotificationFormatter notificationFormatter;
 
     private final boolean geocodeOnRequest;
     private final long timeThreshold;
@@ -65,12 +71,14 @@ public class NotificationManager {
     @Inject
     public NotificationManager(
             Config config, Storage storage, CacheManager cacheManager, @Nullable EventForwarder eventForwarder,
-            NotificatorManager notificatorManager, @Nullable Geocoder geocoder) {
+            NotificatorManager notificatorManager, @Nullable Geocoder geocoder,
+            NotificationFormatter notificationFormatter) {
         this.storage = storage;
         this.cacheManager = cacheManager;
         this.eventForwarder = eventForwarder;
         this.notificatorManager = notificatorManager;
         this.geocoder = geocoder;
+        this.notificationFormatter = notificationFormatter;
         geocodeOnRequest = config.getBoolean(Keys.GEOCODER_ON_REQUEST);
         timeThreshold = config.getLong(Keys.NOTIFICATOR_TIME_THRESHOLD);
         String blockedUsersString = config.getString(Keys.NOTIFICATION_BLOCK_USERS);
@@ -123,11 +131,13 @@ public class NotificationManager {
                 event.getType(),
                 notifications.size());
 
-        if (!notifications.isEmpty()) {
-            if (position != null && position.getAddress() == null && geocodeOnRequest && geocoder != null) {
-                position.setAddress(geocoder.getAddress(position.getLatitude(), position.getLongitude(), null));
-            }
+        if (position != null && position.getAddress() == null && geocodeOnRequest && geocoder != null) {
+            position.setAddress(geocoder.getAddress(position.getLatitude(), position.getLongitude(), null));
+        }
 
+
+
+        if (!notifications.isEmpty()) {
             notifications.forEach(notification -> {
                 cacheManager.getNotificationUsers(notification.getId(), event.getDeviceId()).forEach(user -> {
                     if (blockedUsers.contains(user.getId())) {
@@ -135,10 +145,14 @@ public class NotificationManager {
                         return;
                     }
                     for (String notificator : notification.getNotificatorsTypes()) {
-                        try {
-                            notificatorManager.getNotificator(notificator).send(notification, user, event, position);
-                        } catch (MessageException exception) {
-                            LOGGER.warn("Notification failed", exception);
+                        Notificator notificatorInstance = notificatorManager.getNotificator(notificator);
+                        if (notificatorInstance != null) {
+                            try {
+                                notificatorInstance.send(notification, user, event, position);
+                                saveHistory(user, notification, event, position, notificator);
+                            } catch (MessageException exception) {
+                                LOGGER.warn("Notification failed", exception);
+                            }
                         }
                     }
                 });
@@ -181,4 +195,30 @@ public class NotificationManager {
             }
         }
     }
+    public void saveHistory(
+            User user, org.traccar.model.Notification notification, Event event, Position position, String notificator) {
+        try {
+            NotificationPush push = new NotificationPush();
+            push.setUserId(user.getId());
+            if (event != null) {
+                push.setDeviceId(event.getDeviceId());
+                push.setEventTime(event.getEventTime());
+                push.setType(event.getType());
+            } else {
+                push.setDeviceId(0);
+                push.setEventTime(new java.util.Date());
+                push.setType("manual");
+            }
+            push.setNotificator(notificator);
+
+            NotificationMessage message = notificationFormatter.formatMessage(notification, user, event, position);
+            push.setMessage(message.digest());
+
+            storage.addObject(push, new Request(new Columns.Exclude("id")));
+            LOGGER.info("Saved notification history for user {} via {}", user.getId(), notificator);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to save notification history", e);
+        }
+    }
+
 }

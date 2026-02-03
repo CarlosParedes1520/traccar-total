@@ -83,10 +83,17 @@ public class NotificatorFirebase extends Notificator {
 
     @Override
     public void send(User user, NotificationMessage message, Event event, Position position) throws MessageException {
+        List<String> registrationTokens = new ArrayList<>();
         if (user.hasAttribute("notificationTokens")) {
+            registrationTokens.addAll(Arrays.asList(user.getString("notificationTokens").split("[, ]")));
+        }
+        if (user.getFcmtoken() != null && !user.getFcmtoken().isEmpty()) {
+            if (!registrationTokens.contains(user.getFcmtoken())) {
+                registrationTokens.add(user.getFcmtoken());
+            }
+        }
 
-            List<String> registrationTokens = new ArrayList<>(
-                    Arrays.asList(user.getString("notificationTokens").split("[, ]")));
+        if (!registrationTokens.isEmpty()) {
 
             var androidConfig = AndroidConfig.builder()
                     .setNotification(AndroidNotification.builder().setSound("default").build());
@@ -113,7 +120,10 @@ public class NotificatorFirebase extends Notificator {
             }
 
             try {
+                LOGGER.info("Sending Firebase notification to user {} with {} tokens", user.getId(), registrationTokens.size());
                 var result = firebaseMessaging.sendEachForMulticast(messageBuilder.build());
+                LOGGER.info("Firebase notification sent, success count: {}, failure count: {}",
+                        result.getSuccessCount(), result.getFailureCount());
                 List<String> failedTokens = new LinkedList<>();
                 var iterator = result.getResponses().listIterator();
                 while (iterator.hasNext()) {

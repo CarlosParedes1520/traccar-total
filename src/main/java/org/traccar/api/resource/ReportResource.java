@@ -34,6 +34,7 @@ import org.traccar.reports.TripsReportProvider;
 import org.traccar.reports.common.ReportExecutor;
 import org.traccar.reports.common.ReportMailer;
 import org.traccar.reports.model.CombinedReportItem;
+import org.traccar.reports.model.ReportResponse;
 import org.traccar.reports.model.StopReportItem;
 import org.traccar.reports.model.SummaryReportItem;
 import org.traccar.reports.model.TripReportItem;
@@ -54,7 +55,6 @@ import jakarta.ws.rs.core.StreamingOutput;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Path("reports")
 @Produces(MediaType.APPLICATION_JSON)
@@ -128,14 +128,20 @@ public class ReportResource extends SimpleObjectResource<Report> {
 
     @Path("route")
     @GET
-    public Collection<Position> getRoute(
+    public ReportResponse<Position> getRoute(
             @QueryParam("deviceId") List<Long> deviceIds,
             @QueryParam("groupId") List<Long> groupIds,
             @QueryParam("from") Date from,
-            @QueryParam("to") Date to) throws StorageException {
+            @QueryParam("to") Date to,
+            @QueryParam("desc") boolean descending,
+            @QueryParam("limit") int limit,
+            @QueryParam("offset") int offset) throws StorageException {
         permissionsService.checkRestriction(getUserId(), UserRestrictions::getDisableReports);
         actionLogger.report(request, getUserId(), false, "route", from, to, deviceIds, groupIds);
-        return routeReportProvider.getObjects(getUserId(), deviceIds, groupIds, from, to);
+        return new ReportResponse<>(
+                routeReportProvider.getObjects(getUserId(), deviceIds, groupIds, from, to, descending, limit, offset),
+                routeReportProvider.getCount(getUserId(), deviceIds, groupIds, from, to),
+                limit, offset);
     }
 
     @Path("route")
@@ -168,16 +174,23 @@ public class ReportResource extends SimpleObjectResource<Report> {
 
     @Path("events")
     @GET
-    public Stream<Event> getEvents(
+    public ReportResponse<Event> getEvents(
             @QueryParam("deviceId") List<Long> deviceIds,
             @QueryParam("groupId") List<Long> groupIds,
             @QueryParam("type") List<String> types,
             @QueryParam("alarm") List<String> alarms,
             @QueryParam("from") Date from,
-            @QueryParam("to") Date to) throws StorageException {
+            @QueryParam("to") Date to,
+            @QueryParam("desc") boolean descending,
+            @QueryParam("limit") int limit,
+            @QueryParam("offset") int offset) throws StorageException {
         permissionsService.checkRestriction(getUserId(), UserRestrictions::getDisableReports);
         actionLogger.report(request, getUserId(), false, "events", from, to, deviceIds, groupIds);
-        return eventsReportProvider.getObjects(getUserId(), deviceIds, groupIds, types, alarms, from, to);
+        return new ReportResponse<>(
+                eventsReportProvider.getObjects(
+                        getUserId(), deviceIds, groupIds, types, alarms, from, to, descending, limit, offset).toList(),
+                eventsReportProvider.getCount(getUserId(), deviceIds, groupIds, types, alarms, from, to),
+                limit, offset);
     }
 
     @Path("events")

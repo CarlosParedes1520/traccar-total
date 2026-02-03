@@ -7,23 +7,39 @@
     <entry key='web.debug'>true</entry>
     <entry key='web.console'>true</entry>
     <entry key='web.mcp.enable'>true</entry>
+    <entry key='web.port'>8082</entry>
+    <entry key='notificator.types'>web,firebase</entry>
 
     <entry key='geocoder.type'>pluscodes</entry>
 
     <entry key='media.path'>./target/media</entry>
 
     <entry key='logger.console'>true</entry>
-    <entry key='logger.queries'>false</entry>
+    <entry key='logger.queries'>true</entry>
     <entry key='logger.fullStackTraces'>true</entry>
 
     <entry key='mail.debug'>true</entry>
 
     <entry key='database.driver'>com.mysql.cj.jdbc.Driver</entry>
-<entry key='database.url'>jdbc:mysql://137.184.85.144:4406/traccar?serverTimezone=UTC&amp;useSSL=false&amp;allowPublicKeyRetrieval=true</entry>
-<entry key='database.user'>physeter</entry>
-<entry key='database.password'>Ph15eter$2025$R</entry>
+    <entry key='database.url'>jdbc:mysql://137.184.85.144:4406/traccar?serverTimezone=UTC&amp;useSSL=false&amp;allowPublicKeyRetrieval=true</entry>
+    <entry key='database.user'>physeter</entry>
+    <entry key='database.password'>Ph15eter$2025$R</entry>
     <!--<entry key='server.instantAcknowledgement'>true</entry>
     <entry key='server.buffering.threshold'>5000</entry>-->
+
+    <entry key='notificator.firebase.serviceAccount'>{
+  "type": "service_account",
+  "project_id": "rastreo-f0bd5",
+  "private_key_id": "b42eb7f3b2b36e39f8735def66008e2a932b229a",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCrPrcilW19L34I\nzU6NyXiTgifJ/ZGEQJQ3rwMAHlNld5g/ONuxUe3tu7aylxar22JXyKlXZaR6sIQy\n4vqyJrV/O3bpNv7GE1LW3NK/dX7u1GmvhWReS97C5dZMhNE+ewfn6P993zjamjYo\nrcXDslgY6IvoO3BN6AdOKUV+Hr9B3WNX4acQuhrrkqD8blBzw64SbELfXic/dla9\nwwibRI7aToII8ZqbMhc7Nvf0VFAPNPlZZN9306mRQq4uPwuE/mbm23gd53bJShDv\n8L82b6taEOx3EGsHiEla8k9+AL8IHXOPqegQFY9DEeYlqFt0W0ssjEXXDqgW7GhL\np4IOgPjvAgMBAAECggEAA93+tME7H8Ca0AgS5hDOsEYYL++SAbKTpk5FexM0Pu5c\nedEG5RI8lUnP7miLEoZ5yhG2AUtCU6L42U1W6/8DykPFg67CQibdkAyclcZJf4s8\nd8JDaf28ohoepMu7DfYpT4treaQ43HbvEiwaczjr1GQsBKqS9q9uus0jzJ1VJF+a\nCvQrBnAJu8uj6iZbVyhfzgknO+JfsKw4qgg/WBAz3Y5Qi5V0VRPcEH3Dy3A61Te7\nKeS+s28Y9HQr0jsyfbe7kaJXO2BI2qzylgPGI5wiP5NRdfUKRLnl9qpIBxGgPvEE\nAmVTpXnBcZeH0bA5xipIJ2vH0GXJowTnJy17x6F0wQKBgQDhu7aXZJ1qAIQjR3Yg\n8HxEeVuYUzI0Ng3O5K5uu4O34p5Is80cjdc5x334GH9MzfiUfUMZLHNpLYR3b4hg\ncJ7udyCzXVaCmZ8CyIE86we0bvYzxUngx4EzzIIdvESkmAFKM6AdkwX1Wf3ab6YI\nKYEBaJ4Br/Odzl83oFbCTR3hHQKBgQDCNLGjSVVlh+DgVnqyBLZLbgCIdyMHRDwE\nsMsFwWNyVsrYI6weIhQYM8CPkGlgaOwRjUWmb7w0tH/lYMk5c3gn8Mh04z6UMW6k\neVzNIB2cVLFf6WLeWvuMdt8fiLavydZ2QuYmt6EV3zkp8YEI2K5MPQXsQG23Hegk\n5KHhdyQQewKBgCp48kscAE5QmIw2xvA9r3QGzYgkpz6RqRlzh6qIF6mCtzuAsSgd\nPBDAC2Ch41nlK09tHjHfXju8976tOqDCr/S4b2uwNTXPh86zQTXgFwwJEMP+6/6i\nKxo+8YB8ywGZJCz897R41FcsvonaFghVHtPQBmLU42aezOWfgpN+hQ+1AoGAXXTi\nL0PxFoUHEK5NKTHfT/lFxGYgszSA9XjmmoRwCOv/fXfdMjsQFH2DIxNJwp17TQ8A\n/5ExruNV0Np8u2r33bCfprBcww/uwLOulv/nf/25xgAYFg0OlI/328L8tyeYTxzu\niJ9Bo7biWW7gu5MafZG4MfLnWYHI30gvJsMg1dUCgYAbwpWuv/ylP/5s2wdTS4C6\nVQ1dB4Hblh9IYVwHSWtFyDM6/TNbVj3qvnuv5QRzrRMj5kKtMX6zgJxzLzq9yVlg\n9bp8VBN3wbvShMbp51BaJaa71IROH1ARt2U5eOU5z3C5U9NTETKKzks9gx1ZKojj\nv6iD7ZOWcBpJGqs1B+ekyA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@rastreo-f0bd5.iam.gserviceaccount.com",
+  "client_id": "100055652137067765604",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40rastreo-f0bd5.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}</entry>
 
     <entry key='atrack.custom'>true</entry>
     <entry key='intellitrac.port'>6037</entry>

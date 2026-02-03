@@ -57,7 +57,13 @@ public final class PositionUtil {
 
     public static List<Position> getPositions(
             Storage storage, long deviceId, Date from, Date to) throws StorageException {
-        try (var positions = getPositionsStream(storage, deviceId, from, to)) {
+        return getPositions(storage, deviceId, from, to, false, 0, 0);
+    }
+
+    public static List<Position> getPositions(
+            Storage storage, long deviceId, Date from, Date to,
+            boolean descending, int limit, int offset) throws StorageException {
+        try (var positions = getPositionsStream(storage, deviceId, from, to, descending, limit, offset)) {
             return positions.toList();
         }
     }
@@ -76,12 +82,18 @@ public final class PositionUtil {
 
     public static Stream<Position> getPositionsStream(
             Storage storage, long deviceId, Date from, Date to) throws StorageException {
+        return getPositionsStream(storage, deviceId, from, to, false, 0, 0);
+    }
+
+    public static Stream<Position> getPositionsStream(
+            Storage storage, long deviceId, Date from, Date to,
+            boolean descending, int limit, int offset) throws StorageException {
         return storage.getObjectsStream(Position.class, new Request(
                 new Columns.All(),
                 new Condition.And(
                         new Condition.Equals("deviceId", deviceId),
                         new Condition.Between("fixTime", from, to)),
-                new Order("fixTime")));
+                new Order("fixTime", descending, limit, offset)));
     }
 
     public static Position getEdgePosition(

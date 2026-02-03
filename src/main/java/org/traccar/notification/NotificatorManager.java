@@ -17,6 +17,8 @@
 package org.traccar.notification;
 
 import com.google.inject.Injector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.traccar.config.Config;
 import org.traccar.config.Keys;
 import org.traccar.model.Typed;
@@ -41,6 +43,8 @@ import java.util.stream.Collectors;
 @Singleton
 public class NotificatorManager {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(NotificatorManager.class);
+
     private static final Map<String, Class<? extends Notificator>> NOTIFICATORS_ALL = Map.of(
             "command", NotificatorCommand.class,
             "web", NotificatorWeb.class,
@@ -59,6 +63,7 @@ public class NotificatorManager {
     public NotificatorManager(Injector injector, Config config) {
         this.injector = injector;
         String types = config.getString(Keys.NOTIFICATOR_TYPES);
+        LOGGER.info("Loading notificator types: {}", types);
         if (types != null) {
             this.types.addAll(Arrays.asList(types.split(",")));
         }
@@ -72,7 +77,7 @@ public class NotificatorManager {
                 return notificator;
             }
         }
-        throw new RuntimeException("Failed to get notificator " + type);
+        return null; // Return null instead of throwing
     }
 
     public Set<Typed> getAllNotificatorTypes() {

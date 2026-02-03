@@ -28,6 +28,7 @@ import java.util.HashMap;
 @StorageName("tc_users")
 public class User extends ExtendedModel implements UserRestrictions, Disableable {
 
+
     private String name;
 
     public String getName() {
@@ -280,12 +281,10 @@ public class User extends ExtendedModel implements UserRestrictions, Disableable
     private String hashedPassword;
 
     @JsonIgnore
-    @QueryIgnore
     public String getHashedPassword() {
         return hashedPassword;
     }
 
-    @QueryIgnore
     public void setHashedPassword(String hashedPassword) {
         this.hashedPassword = hashedPassword;
     }
@@ -293,12 +292,10 @@ public class User extends ExtendedModel implements UserRestrictions, Disableable
     private String salt;
 
     @JsonIgnore
-    @QueryIgnore
     public String getSalt() {
         return salt;
     }
 
-    @QueryIgnore
     public void setSalt(String salt) {
         this.salt = salt;
     }
@@ -318,6 +315,76 @@ public class User extends ExtendedModel implements UserRestrictions, Disableable
             otherAttributes.remove(exclusion);
         }
         return thisAttributes.equals(otherAttributes);
+    }
+
+    private String temporarykey;
+
+    public String getTemporarykey() {
+        return temporarykey;
+    }
+
+    public void setTemporarykey(String temporarykey) {
+        this.temporarykey = temporarykey;
+    }
+
+    private Date temporarykeyexpiration;
+
+    public Date getTemporarykeyexpiration() {
+        return temporarykeyexpiration;
+    }
+
+    public void setTemporarykeyexpiration(Date temporarykeyexpiration) {
+        this.temporarykeyexpiration = temporarykeyexpiration;
+    }
+
+    private String lastname;
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    private boolean fcmactivate;
+
+    public boolean getFcmactivate() {
+        return fcmactivate;
+    }
+
+    public void setFcmactivate(boolean fcmactivate) {
+        this.fcmactivate = fcmactivate;
+    }
+
+    private String fcmtoken;
+
+    public String getFcmtoken() {
+        return fcmtoken;
+    }
+
+    public void setFcmtoken(String fcmtoken) {
+        this.fcmtoken = fcmtoken;
+    }
+
+    private Date lastlogin;
+
+    public Date getLastlogin() {
+        return lastlogin;
+    }
+
+    public void setLastlogin(Date lastlogin) {
+        this.lastlogin = lastlogin;
+    }
+
+    private boolean temporarypasswordactive;
+
+    public boolean getTemporarypasswordactive() {
+        return temporarypasswordactive;
+    }
+
+    public void setTemporarypasswordactive(boolean temporarypasswordactive) {
+        this.temporarypasswordactive = temporarypasswordactive;
     }
 
 }

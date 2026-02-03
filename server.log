@@ -1,0 +1,42 @@
+2026-02-02 21:53:34  INFO: Operating system name: Linux version: 6.8.0-51-generic architecture: amd64
+2026-02-02 21:53:34  INFO: Java runtime name: OpenJDK 64-Bit Server VM vendor: Ubuntu version: 21.0.8+9-Ubuntu-0ubuntu124.04.1
+2026-02-02 21:53:34  INFO: Memory limit heap: 3458mb non-heap: 0mb
+2026-02-02 21:53:34  INFO: Character encoding: UTF-8
+2026-02-02 21:53:34  INFO: Version: 6.11.1
+2026-02-02 21:53:34  INFO: Starting server...
+2026-02-02 21:53:34  INFO: HikariPool-1 - Starting...
+2026-02-02 21:53:36  INFO: HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4aa3d36
+2026-02-02 21:53:36  INFO: HikariPool-1 - Start completed.
+2026-02-02 21:53:40  INFO: Successfully acquired change log lock
+2026-02-02 21:53:44  INFO: Clearing database change log checksums for database mysql
+2026-02-02 21:53:45  INFO: Successfully released change log lock
+2026-02-02 21:53:45  INFO: Command execution complete
+2026-02-02 21:53:47  INFO: Reading from traccar.DATABASECHANGELOG
+2026-02-02 21:54:07  INFO: Reading from traccar.DATABASECHANGELOG
+Database is up to date, no changesets to execute
+2026-02-02 21:54:08  INFO: Reading from traccar.DATABASECHANGELOG
+
+UPDATE SUMMARY
+Run:                          0
+Previously run:              36
+Filtered out:                 0
+-------------------------------
+Total change sets:           36
+
+2026-02-02 21:54:08  INFO: UPDATE SUMMARY
+2026-02-02 21:54:08  INFO: Run:                          0
+2026-02-02 21:54:08  INFO: Previously run:              36
+2026-02-02 21:54:08  INFO: Filtered out:                 0
+2026-02-02 21:54:08  INFO: -------------------------------
+2026-02-02 21:54:08  INFO: Total change sets:           36
+2026-02-02 21:54:08  INFO: Update summary generated
+2026-02-02 21:54:08  INFO: Command execution complete
+2026-02-02 21:54:09  INFO: UPDATE tc_devices SET status = ?
+2026-02-02 21:54:09  INFO: SELECT * FROM tc_servers
+2026-02-02 21:54:10  INFO: jetty-12.1.5; built: 2025-12-03T22:18:24.732Z; git: 4905d09d7b6801e792d7b73946cf7b66e4be25d6; jvm 21.0.8+9-Ubuntu-0ubuntu124.04.1
+2026-02-02 21:54:10  INFO: Session workerName=node0
+2026-02-02 21:54:10  INFO: Started oeje10s.ServletContextHandler@3dd750ba{ROOT,/,b=file:///home/carlos/Desktop/traccar/traccar/traccar-web/simple/,a=AVAILABLE,h=oeje10s.SessionHandler@7eefaca0{STARTED}}
+2026-02-02 21:54:11  INFO: Started oeje10s.ServletContextHandler@3dd750ba{ROOT,/,b=file:///home/carlos/Desktop/traccar/traccar/traccar-web/simple/,a=AVAILABLE,h=oeje10s.SessionHandler@7eefaca0{STARTED}}
+2026-02-02 21:54:11  INFO: Started oejs.ServerConnector@2517adc{HTTP/1.1, (http/1.1)}{0.0.0.0:8095}
+2026-02-02 21:54:11  INFO: Started oejs.Server@6b3bc1f6{STARTING}[12.1.5,sto=0] @484ms
+2026-02-02 21:56:57  INFO: Stopping server...

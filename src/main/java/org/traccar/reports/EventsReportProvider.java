@@ -63,12 +63,17 @@ public class EventsReportProvider {
     }
 
     private Stream<Event> getEvents(long deviceId, Date from, Date to) throws StorageException {
+        return getEvents(deviceId, from, to, false, 0, 0);
+    }
+
+    private Stream<Event> getEvents(
+            long deviceId, Date from, Date to, boolean descending, int limit, int offset) throws StorageException {
         return storage.getObjectsStream(Event.class, new Request(
                 new Columns.All(),
                 new Condition.And(
                         new Condition.Equals("deviceId", deviceId),
                         new Condition.Between("eventTime", from, to)),
-                new Order("eventTime")));
+                new Order("eventTime", descending, limit, offset)));
     }
 
     private boolean filterType(Collection<String> types, Collection<String> alarms, Event event) {
@@ -79,16 +84,37 @@ public class EventsReportProvider {
                 || alarms.contains(event.getString(Position.KEY_ALARM));
     }
 
+    public long getCount(
+            long userId, Collection<Long> deviceIds, Collection<Long> groupIds,
+            Collection<String> types, Collection<String> alarms, Date from, Date to) throws StorageException {
+        reportUtils.checkPeriodLimit(from, to);
+        long totalCount = 0;
+        for (Device device : DeviceUtil.getAccessibleDevices(storage, userId, deviceIds, groupIds)) {
+            totalCount += storage.getCount(Event.class, new Request(
+                    new Condition.And(
+                            new Condition.Equals("deviceId", device.getId()),
+                            new Condition.Between("eventTime", from, to))));
+        }
+        return totalCount;
+    }
+
     public Stream<Event> getObjects(
             long userId, Collection<Long> deviceIds, Collection<Long> groupIds,
             Collection<String> types, Collection<String> alarms, Date from, Date to) throws StorageException {
+        return getObjects(userId, deviceIds, groupIds, types, alarms, from, to, false, 0, 0);
+    }
+
+    public Stream<Event> getObjects(
+            long userId, Collection<Long> deviceIds, Collection<Long> groupIds,
+            Collection<String> types, Collection<String> alarms, Date from, Date to,
+            boolean descending, int limit, int offset) throws StorageException {
         reportUtils.checkPeriodLimit(from, to);
         boolean all = types.isEmpty() || types.contains(Event.ALL_EVENTS);
 
         return DeviceUtil.getAccessibleDevices(storage, userId, deviceIds, groupIds).stream()
                 .flatMap(device -> {
                     try {
-                        return getEvents(device.getId(), from, to);
+                        return getEvents(device.getId(), from, to, descending, limit, offset);
                     } catch (StorageException e) {
                         return Stream.of();
                     }

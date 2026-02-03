@@ -60,6 +60,9 @@ public class NotificationResource extends ExtendedObjectResource<Notification> {
     @Inject
     private NotificatorManager notificatorManager;
 
+    @Inject
+    private org.traccar.database.NotificationManager notificationManager;
+
     public NotificationResource() {
         super(Notification.class, "description");
     }
@@ -94,8 +97,12 @@ public class NotificationResource extends ExtendedObjectResource<Notification> {
     @Path("test")
     public Response testMessage() throws MessageException, StorageException {
         User user = permissionsService.getUser(getUserId());
+        org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NotificationResource.class);
+        logger.info("Triggering test notifications for user {}", user.getId());
         for (Typed method : notificatorManager.getAllNotificatorTypes()) {
+            logger.info("Sending test notification via {}", method.type());
             notificatorManager.getNotificator(method.type()).send(null, user, new Event("test", 0), null);
+            notificationManager.saveHistory(user, null, new Event("test", 0), null, method.type());
         }
         return Response.noContent().build();
     }
@@ -106,6 +113,7 @@ public class NotificationResource extends ExtendedObjectResource<Notification> {
             throws MessageException, StorageException {
         User user = permissionsService.getUser(getUserId());
         notificatorManager.getNotificator(notificator).send(null, user, new Event("test", 0), null);
+        notificationManager.saveHistory(user, null, new Event("test", 0), null, notificator);
         return Response.noContent().build();
     }
 
@@ -139,9 +147,26 @@ public class NotificationResource extends ExtendedObjectResource<Notification> {
         for (User user : users) {
             if (!user.getTemporary()) {
                 notificatorManager.getNotificator(notificator).send(user, message, null, null);
+                notificationManager.saveHistory(user, null, null, null, notificator);
             }
         }
         return Response.noContent().build();
+    }
+
+    @POST
+    @Path("simulate")
+    public Response simulateEvent() {
+        Event event = new Event("deviceOnline", 0);
+        event.setDeviceId(1);
+        event.setEventTime(new java.util.Date());
+        org.traccar.model.Position position = new org.traccar.model.Position("gps");
+        position.setTime(new java.util.Date());
+        position.setDeviceId(1);
+        position.setLatitude(0);
+        position.setLongitude(0);
+
+        notificationManager.updateEvents(java.util.Map.of(event, position));
+        return Response.ok("Simulated").build();
     }
 
 }

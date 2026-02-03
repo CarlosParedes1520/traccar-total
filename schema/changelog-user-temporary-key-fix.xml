@@ -1,0 +1,12 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="20250202-02" author="antigravity">
+        <renameColumn tableName="tc_users" oldColumnName="temporaryKey" newColumnName="temporarykey"/>
+        <renameColumn tableName="tc_users" oldColumnName="temporaryKeyExpiration" newColumnName="temporarykeyexpiration"/>
+    </changeSet>
+</databaseChangeLog>

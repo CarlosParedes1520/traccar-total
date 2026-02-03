@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="user-temporary-key" author="antigravity">
+        <addColumn tableName="tc_users">
+            <column name="temporaryKey" type="VARCHAR(64)" />
+            <column name="temporaryKeyExpiration" type="TIMESTAMP" />
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

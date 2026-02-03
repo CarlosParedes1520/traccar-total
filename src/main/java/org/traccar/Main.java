@@ -114,6 +114,7 @@ public final class Main {
 
     public static void run(String configFile) {
         try {
+            LOGGER.info("Using configuration file: {}", configFile);
             injector = Guice.createInjector(new MainModule(configFile), new DatabaseModule(), new WebModule());
             logSystemInfo();
             LOGGER.info("Version: {}", Main.class.getPackage().getImplementationVersion());

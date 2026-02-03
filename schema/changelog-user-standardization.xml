@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="changelog-user-standardization" author="antigravity">
+        <renameColumn tableName="tc_users" oldColumnName="last_name" newColumnName="lastname"/>
+        <renameColumn tableName="tc_users" oldColumnName="fcmActivate" newColumnName="fcmactivate"/>
+        <renameColumn tableName="tc_users" oldColumnName="fcmToken" newColumnName="fcmtoken"/>
+        <renameColumn tableName="tc_users" oldColumnName="last_login" newColumnName="lastlogin"/>
+        <renameColumn tableName="tc_users" oldColumnName="temporaryPasswordActive" newColumnName="temporarypasswordactive"/>
+    </changeSet>
+
+</databaseChangeLog>

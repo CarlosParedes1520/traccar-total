@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="6.11.2" author="antigravity">
+        <createTable tableName="tc_notifications_push">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="userId" type="INT">
+                <constraints nullable="false" foreignKeyName="fk_notification_push_user_id" referencedTableName="tc_users" referencedColumnNames="id" deleteCascade="true" />
+            </column>
+            <column name="deviceId" type="INT" />
+            <column name="eventTime" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="type" type="VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="message" type="VARCHAR(1024)">
+                <constraints nullable="false" />
+            </column>
+            <column name="notificator" type="VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

@@ -60,13 +60,31 @@ public class RouteReportProvider {
         this.storage = storage;
     }
 
+    public long getCount(long userId, Collection<Long> deviceIds, Collection<Long> groupIds,
+            Date from, Date to) throws StorageException {
+        reportUtils.checkPeriodLimit(from, to);
+        long totalCount = 0;
+        for (Device device : DeviceUtil.getAccessibleDevices(storage, userId, deviceIds, groupIds)) {
+            totalCount += storage.getCount(Position.class, new Request(
+                    new Condition.And(
+                            new Condition.Equals("deviceId", device.getId()),
+                            new Condition.Between("fixTime", from, to))));
+        }
+        return totalCount;
+    }
+
     public Collection<Position> getObjects(long userId, Collection<Long> deviceIds, Collection<Long> groupIds,
             Date from, Date to) throws StorageException {
+        return getObjects(userId, deviceIds, groupIds, from, to, false, 0, 0);
+    }
+
+    public Collection<Position> getObjects(long userId, Collection<Long> deviceIds, Collection<Long> groupIds,
+            Date from, Date to, boolean descending, int limit, int offset) throws StorageException {
         reportUtils.checkPeriodLimit(from, to);
 
         ArrayList<Position> result = new ArrayList<>();
         for (Device device: DeviceUtil.getAccessibleDevices(storage, userId, deviceIds, groupIds)) {
-            result.addAll(PositionUtil.getPositions(storage, device.getId(), from, to));
+            result.addAll(PositionUtil.getPositions(storage, device.getId(), from, to, descending, limit, offset));
         }
         return result;
     }
