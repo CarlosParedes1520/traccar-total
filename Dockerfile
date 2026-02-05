@@ -24,12 +24,36 @@ RUN chmod +x ./gradlew
 # Construir el proyecto
 RUN ./gradlew assemble --no-daemon
 
+# Verificar que el JAR se haya generado y encontrar su nombre exacto
+RUN echo "Buscando JAR en target/..." && \
+    ls -la target/ && \
+    find target -name "*.jar" -type f
+
 # Crear estructura de directorios para Traccar
 RUN mkdir -p /opt/traccar/{conf,data,logs}
 
-# Copiar el JAR y dependencias
-RUN cp target/tracker-server.jar /opt/traccar/ && \
-    cp -r target/lib /opt/traccar/
+# Copiar el JAR (buscar el JAR generado y renombrarlo a tracker-server.jar)
+RUN JAR_FILE=$(find target -name "tracker-server*.jar" -type f | head -1) && \
+    if [ -z "$JAR_FILE" ]; then \
+        echo "ERROR: No se encontró tracker-server*.jar" && \
+        echo "Archivos en target/:" && \
+        ls -la target/ && \
+        echo "Buscando cualquier JAR:" && \
+        find target -name "*.jar" && \
+        exit 1; \
+    fi && \
+    echo "JAR encontrado: $JAR_FILE" && \
+    cp "$JAR_FILE" /opt/traccar/tracker-server.jar && \
+    echo "JAR copiado exitosamente" && \
+    ls -lh /opt/traccar/tracker-server.jar
+
+# Copiar dependencias
+RUN if [ -d "target/lib" ]; then \
+        cp -r target/lib /opt/traccar/ && \
+        echo "Dependencias copiadas"; \
+    else \
+        echo "ADVERTENCIA: target/lib no existe"; \
+    fi
 
 # Imagen final
 FROM eclipse-temurin:17-jre-alpine
@@ -42,6 +66,14 @@ WORKDIR /opt/traccar
 # Copiar archivos construidos
 COPY --from=build /opt/traccar/tracker-server.jar ./
 COPY --from=build /opt/traccar/lib ./lib
+
+# Verificar que el JAR existe antes de continuar
+RUN if [ ! -f "tracker-server.jar" ]; then \
+        echo "ERROR: tracker-server.jar no existe en /opt/traccar" && \
+        ls -la /opt/traccar/ && \
+        exit 1; \
+    fi && \
+    echo "JAR verificado: tracker-server.jar existe"
 
 # Crear directorios necesarios
 RUN mkdir -p conf data logs
