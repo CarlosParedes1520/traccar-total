@@ -94,7 +94,7 @@ RUN chmod +x /opt/traccar/docker-entrypoint.sh
 EXPOSE 8082
 
 # Variables de entorno por defecto
-ENV JAVA_OPTS="-Xmx512m"
+ENV JAVA_OPTS="-Xmx1024m -Xms256m"
 ENV CONFIG_USE_ENVIRONMENT_VARIABLES="true"
 
 # Healthcheck (Railway puede usar esto, pero el puerto se configura dinámicamente)
