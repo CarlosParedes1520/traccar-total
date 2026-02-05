@@ -33,21 +33,83 @@ DB_URL=""
 DB_USER=""
 DB_PASSWORD=""
 
-# Si DATABASE_URL está configurada, verificar si necesita conversión
+# Si DATABASE_URL está configurada, extraer información
 if [ -n "$DATABASE_URL" ]; then
-    # Si la URL no comienza con jdbc:, convertirla
-    if echo "$DATABASE_URL" | grep -q "^jdbc:"; then
-        DB_URL="$DATABASE_URL"
-    elif echo "$DATABASE_URL" | grep -q "^postgresql://"; then
-        # Convertir postgresql:// a jdbc:postgresql://
-        DB_URL=$(echo "$DATABASE_URL" | sed 's|^postgresql://|jdbc:postgresql://|')
-        echo "  - Convertida URL de postgresql:// a formato JDBC"
+    echo "  - Procesando DATABASE_URL: ${DATABASE_URL:0:50}..."
+    
+    # Detectar tipo de base de datos y extraer credenciales
+    if echo "$DATABASE_URL" | grep -q "^postgresql://"; then
+        # PostgreSQL: postgresql://user:password@host:port/database
+        DB_DRIVER="org.postgresql.Driver"
+        
+        # Extraer usuario y contraseña de la URL
+        # Formato: postgresql://user:password@host:port/database
+        URL_PART=$(echo "$DATABASE_URL" | sed 's|^postgresql://||')
+        
+        # Extraer usuario y contraseña si están presentes
+        if echo "$URL_PART" | grep -q "@"; then
+            # Hay credenciales en la URL
+            CREDENTIALS=$(echo "$URL_PART" | cut -d'@' -f1)
+            HOST_PART=$(echo "$URL_PART" | cut -d'@' -f2)
+            
+            if echo "$CREDENTIALS" | grep -q ":"; then
+                DB_USER=$(echo "$CREDENTIALS" | cut -d':' -f1)
+                DB_PASSWORD=$(echo "$CREDENTIALS" | cut -d':' -f2-)
+            else
+                DB_USER="$CREDENTIALS"
+            fi
+            
+            # Construir URL JDBC sin credenciales
+            DB_URL="jdbc:postgresql://${HOST_PART}?sslmode=require"
+        else
+            # No hay credenciales, usar la URL directamente
+            DB_URL=$(echo "$DATABASE_URL" | sed 's|^postgresql://|jdbc:postgresql://|')
+            # Agregar sslmode si no está presente
+            if echo "$DB_URL" | grep -qv "sslmode"; then
+                DB_URL="${DB_URL}?sslmode=require"
+            fi
+        fi
+        echo "  - Detectado PostgreSQL, driver configurado"
+        
     elif echo "$DATABASE_URL" | grep -q "^mysql://"; then
-        # Convertir mysql:// a jdbc:mysql://
-        DB_URL=$(echo "$DATABASE_URL" | sed 's|^mysql://|jdbc:mysql://|')
-        echo "  - Convertida URL de mysql:// a formato JDBC"
+        # MySQL: mysql://user:password@host:port/database
+        DB_DRIVER="com.mysql.cj.jdbc.Driver"
+        
+        # Extraer usuario y contraseña de la URL
+        URL_PART=$(echo "$DATABASE_URL" | sed 's|^mysql://||')
+        
+        if echo "$URL_PART" | grep -q "@"; then
+            CREDENTIALS=$(echo "$URL_PART" | cut -d'@' -f1)
+            HOST_PART=$(echo "$URL_PART" | cut -d'@' -f2)
+            
+            if echo "$CREDENTIALS" | grep -q ":"; then
+                DB_USER=$(echo "$CREDENTIALS" | cut -d':' -f1)
+                DB_PASSWORD=$(echo "$CREDENTIALS" | cut -d':' -f2-)
+            else
+                DB_USER="$CREDENTIALS"
+            fi
+            
+            # Construir URL JDBC sin credenciales
+            DB_URL="jdbc:mysql://${HOST_PART}?zeroDateTimeBehavior=round&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=true&allowMultiQueries=true&autoReconnect=true&useUnicode=yes&characterEncoding=UTF-8&sessionVariables=sql_mode=''"
+        else
+            DB_URL=$(echo "$DATABASE_URL" | sed 's|^mysql://|jdbc:mysql://|')
+        fi
+        echo "  - Detectado MySQL, driver configurado"
+        
+    elif echo "$DATABASE_URL" | grep -q "^jdbc:"; then
+        # Ya está en formato JDBC
+        DB_URL="$DATABASE_URL"
+        
+        # Intentar detectar el driver desde la URL
+        if echo "$DATABASE_URL" | grep -q "jdbc:postgresql"; then
+            DB_DRIVER="org.postgresql.Driver"
+        elif echo "$DATABASE_URL" | grep -q "jdbc:mysql"; then
+            DB_DRIVER="com.mysql.cj.jdbc.Driver"
+        fi
+        echo "  - URL ya en formato JDBC"
     else
         DB_URL="$DATABASE_URL"
+        echo "  - URL en formato desconocido, usando tal cual"
     fi
 fi
 
@@ -77,7 +139,7 @@ if [ -z "$DB_URL" ] && [ -n "$MYSQLHOST" ] && [ -n "$MYSQLDATABASE" ]; then
     echo "  - URL JDBC construida desde variables Railway"
 fi
 
-# Usar variables explícitas si están configuradas
+# Usar variables explícitas si están configuradas (tienen prioridad)
 if [ -n "$DATABASE_DRIVER" ]; then
     DB_DRIVER="$DATABASE_DRIVER"
 fi
@@ -86,6 +148,17 @@ if [ -n "$DATABASE_USER" ]; then
 fi
 if [ -n "$DATABASE_PASSWORD" ]; then
     DB_PASSWORD="$DATABASE_PASSWORD"
+fi
+
+# Si tenemos URL pero no driver, intentar detectarlo desde la URL
+if [ -n "$DB_URL" ] && [ -z "$DB_DRIVER" ]; then
+    if echo "$DB_URL" | grep -q "jdbc:postgresql"; then
+        DB_DRIVER="org.postgresql.Driver"
+        echo "  - Driver PostgreSQL detectado desde URL"
+    elif echo "$DB_URL" | grep -q "jdbc:mysql"; then
+        DB_DRIVER="com.mysql.cj.jdbc.Driver"
+        echo "  - Driver MySQL detectado desde URL"
+    fi
 fi
 
 # Agregar configuración de base de datos al archivo XML
