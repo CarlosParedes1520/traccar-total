@@ -81,6 +81,10 @@ RUN mkdir -p conf data logs
 # Copiar archivo de configuración por defecto como plantilla
 COPY setup/traccar.xml conf/traccar.xml.template
 
+# Crear archivo de configuración por defecto (respaldo en caso de que el script no se ejecute)
+RUN cp conf/traccar.xml.template conf/traccar.xml && \
+    echo "Archivo de configuración por defecto creado"
+
 # Copiar script de entrada
 COPY docker-entrypoint.sh /opt/traccar/docker-entrypoint.sh
 RUN chmod +x /opt/traccar/docker-entrypoint.sh
