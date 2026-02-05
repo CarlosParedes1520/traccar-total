@@ -60,13 +60,14 @@ if [ -n "$DATABASE_URL" ]; then
             fi
             
             # Construir URL JDBC sin credenciales
-            DB_URL="jdbc:postgresql://${HOST_PART}?sslmode=require"
+            # En Railway, las conexiones internas pueden no necesitar SSL
+            DB_URL="jdbc:postgresql://${HOST_PART}?sslmode=prefer"
         else
             # No hay credenciales, usar la URL directamente
             DB_URL=$(echo "$DATABASE_URL" | sed 's|^postgresql://|jdbc:postgresql://|')
             # Agregar sslmode si no está presente
             if echo "$DB_URL" | grep -qv "sslmode"; then
-                DB_URL="${DB_URL}?sslmode=require"
+                DB_URL="${DB_URL}?sslmode=prefer"
             fi
         fi
         echo "  - Detectado PostgreSQL, driver configurado"
@@ -122,7 +123,8 @@ if [ -z "$DB_URL" ] && [ -n "$PGHOST" ] && [ -n "$PGDATABASE" ]; then
     PGPORT="${PGPORT:-5432}"
     
     # Construir URL JDBC
-    DB_URL="jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}?sslmode=require"
+    # En Railway, las conexiones internas pueden no necesitar SSL estricto
+    DB_URL="jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}?sslmode=prefer"
     echo "  - URL JDBC construida desde variables Railway"
 fi
 
@@ -254,12 +256,28 @@ echo "Comando: java $JAVA_OPTS -jar tracker-server.jar $CONFIG_FILE"
 echo "Variables Java: $JAVA_OPTS"
 echo ""
 
+# Verificar que el JAR y las dependencias existen
+echo "Verificando archivos necesarios:"
+ls -lh tracker-server.jar 2>/dev/null || echo "  WARNING: tracker-server.jar no encontrado"
+ls -d lib/ 2>/dev/null && echo "  ✓ Directorio lib/ existe" || echo "  WARNING: Directorio lib/ no encontrado"
+echo ""
+
 # Ejecutar Traccar y capturar el código de salida
 # Redirigir stderr a stdout para capturar todos los errores
+# Usar unbuffered output para ver errores inmediatamente
 set +e  # No salir inmediatamente si hay error
-java $JAVA_OPTS -jar tracker-server.jar "$CONFIG_FILE" 2>&1
-EXIT_CODE=$?
+java $JAVA_OPTS -jar tracker-server.jar "$CONFIG_FILE" 2>&1 | tee /tmp/traccar-output.log
+EXIT_CODE=${PIPESTATUS[0]}
 set -e
+
+# Mostrar las últimas líneas del log si hay error
+if [ $EXIT_CODE -ne 0 ]; then
+    echo ""
+    echo "=== Últimas líneas del log de Traccar ==="
+    tail -50 /tmp/traccar-output.log 2>/dev/null || echo "No se pudo leer el log"
+    echo "=========================================="
+    echo ""
+fi
 
 if [ $EXIT_CODE -ne 0 ]; then
     echo ""
