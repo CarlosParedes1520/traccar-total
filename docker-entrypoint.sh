@@ -255,9 +255,9 @@ echo "Variables Java: $JAVA_OPTS"
 echo ""
 
 # Ejecutar Traccar y capturar el código de salida
-# Usar exec para que Railway pueda manejar las señales correctamente
+# Redirigir stderr a stdout para capturar todos los errores
 set +e  # No salir inmediatamente si hay error
-java $JAVA_OPTS -jar tracker-server.jar "$CONFIG_FILE"
+java $JAVA_OPTS -jar tracker-server.jar "$CONFIG_FILE" 2>&1
 EXIT_CODE=$?
 set -e
 
