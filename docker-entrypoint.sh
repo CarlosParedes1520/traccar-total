@@ -265,15 +265,30 @@ echo ""
 # Ejecutar Traccar y capturar el código de salida
 # Redirigir stderr a stdout para capturar todos los errores
 set +e  # No salir inmediatamente si hay error
+
+# Ejecutar Java y mostrar la salida en tiempo real, también guardarla en archivo
+echo "Ejecutando Traccar..."
 java $JAVA_OPTS -jar tracker-server.jar "$CONFIG_FILE" 2>&1 | tee /tmp/traccar-output.log
 EXIT_CODE=${PIPESTATUS[0]}
+
 set -e
 
-# Mostrar las últimas líneas del log si hay error
+# Si hay error, mostrar información adicional de diagnóstico
 if [ $EXIT_CODE -ne 0 ]; then
     echo ""
-    echo "=== Últimas líneas del log de Traccar ==="
-    tail -50 /tmp/traccar-output.log 2>/dev/null || echo "No se pudo leer el log"
+    echo "=========================================="
+    echo "ERROR: Traccar terminó con código: $EXIT_CODE"
+    echo "=========================================="
+    echo ""
+    echo "Buscando mensajes de error en el log..."
+    echo "--- Mensajes de ERROR ---"
+    grep -i "error" /tmp/traccar-output.log | tail -10 || echo "No se encontraron mensajes ERROR"
+    echo ""
+    echo "--- Excepciones ---"
+    grep -i "exception" /tmp/traccar-output.log | tail -10 || echo "No se encontraron excepciones"
+    echo ""
+    echo "--- Últimas 30 líneas del log completo ---"
+    tail -30 /tmp/traccar-output.log
     echo "=========================================="
     echo ""
 fi
