@@ -58,8 +58,8 @@ RUN if [ -d "target/lib" ]; then \
 # Imagen final
 FROM eclipse-temurin:17-jre-alpine
 
-# Instalar dependencias del sistema
-RUN apk add --no-cache tzdata curl
+# Instalar dependencias del sistema (bash necesario para el script de entrada)
+RUN apk add --no-cache tzdata curl bash
 
 WORKDIR /opt/traccar
 

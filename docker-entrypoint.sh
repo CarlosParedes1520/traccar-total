@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 echo "=== Iniciando docker-entrypoint.sh ==="
@@ -264,7 +264,6 @@ echo ""
 
 # Ejecutar Traccar y capturar el código de salida
 # Redirigir stderr a stdout para capturar todos los errores
-# Usar unbuffered output para ver errores inmediatamente
 set +e  # No salir inmediatamente si hay error
 java $JAVA_OPTS -jar tracker-server.jar "$CONFIG_FILE" 2>&1 | tee /tmp/traccar-output.log
 EXIT_CODE=${PIPESTATUS[0]}
