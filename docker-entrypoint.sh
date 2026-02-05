@@ -6,6 +6,11 @@ echo "Directorio de trabajo: $(pwd)"
 echo "Variables de entorno relevantes:"
 echo "  CONFIG_USE_ENVIRONMENT_VARIABLES=${CONFIG_USE_ENVIRONMENT_VARIABLES:-no configurada}"
 echo "  DATABASE_DRIVER=${DATABASE_DRIVER:-no configurada}"
+echo "  DATABASE_URL=${DATABASE_URL:-no configurada}"
+echo "  PGHOST=${PGHOST:-no configurada}"
+echo "  PGPORT=${PGPORT:-no configurada}"
+echo "  PGDATABASE=${PGDATABASE:-no configurada}"
+echo "  PGUSER=${PGUSER:-no configurada}"
 echo "  PORT=${PORT:-no configurada}"
 
 # Crear directorios si no existen
@@ -22,29 +27,90 @@ cat > "$CONFIG_FILE" <<'XMLHEAD'
 <properties>
 XMLHEAD
 
-# Agregar configuración de base de datos si está disponible
-if [ -n "$DATABASE_DRIVER" ]; then
-    echo "    <entry key='database.driver'>$DATABASE_DRIVER</entry>" >> "$CONFIG_FILE"
-    echo "  - Configurado DATABASE_DRIVER"
+# Determinar configuración de base de datos
+DB_DRIVER=""
+DB_URL=""
+DB_USER=""
+DB_PASSWORD=""
+
+# Si DATABASE_URL está configurada, verificar si necesita conversión
+if [ -n "$DATABASE_URL" ]; then
+    # Si la URL no comienza con jdbc:, convertirla
+    if echo "$DATABASE_URL" | grep -q "^jdbc:"; then
+        DB_URL="$DATABASE_URL"
+    elif echo "$DATABASE_URL" | grep -q "^postgresql://"; then
+        # Convertir postgresql:// a jdbc:postgresql://
+        DB_URL=$(echo "$DATABASE_URL" | sed 's|^postgresql://|jdbc:postgresql://|')
+        echo "  - Convertida URL de postgresql:// a formato JDBC"
+    elif echo "$DATABASE_URL" | grep -q "^mysql://"; then
+        # Convertir mysql:// a jdbc:mysql://
+        DB_URL=$(echo "$DATABASE_URL" | sed 's|^mysql://|jdbc:mysql://|')
+        echo "  - Convertida URL de mysql:// a formato JDBC"
+    else
+        DB_URL="$DATABASE_URL"
+    fi
 fi
 
-if [ -n "$DATABASE_URL" ]; then
-    echo "    <entry key='database.url'>$DATABASE_URL</entry>" >> "$CONFIG_FILE"
+# Si tenemos variables PostgreSQL de Railway, construir la URL JDBC
+if [ -z "$DB_URL" ] && [ -n "$PGHOST" ] && [ -n "$PGDATABASE" ]; then
+    echo "  - Detectadas variables PostgreSQL de Railway, construyendo URL JDBC"
+    DB_DRIVER="org.postgresql.Driver"
+    DB_USER="${PGUSER:-postgres}"
+    DB_PASSWORD="${PGPASSWORD:-}"
+    PGPORT="${PGPORT:-5432}"
+    
+    # Construir URL JDBC
+    DB_URL="jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}?sslmode=require"
+    echo "  - URL JDBC construida desde variables Railway"
+fi
+
+# Si tenemos variables MySQL de Railway, construir la URL JDBC
+if [ -z "$DB_URL" ] && [ -n "$MYSQLHOST" ] && [ -n "$MYSQLDATABASE" ]; then
+    echo "  - Detectadas variables MySQL de Railway, construyendo URL JDBC"
+    DB_DRIVER="com.mysql.cj.jdbc.Driver"
+    DB_USER="${MYSQLUSER:-root}"
+    DB_PASSWORD="${MYSQLPASSWORD:-}"
+    MYSQLPORT="${MYSQLPORT:-3306}"
+    
+    # Construir URL JDBC
+    DB_URL="jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQLDATABASE}?zeroDateTimeBehavior=round&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=true&allowMultiQueries=true&autoReconnect=true&useUnicode=yes&characterEncoding=UTF-8&sessionVariables=sql_mode=''"
+    echo "  - URL JDBC construida desde variables Railway"
+fi
+
+# Usar variables explícitas si están configuradas
+if [ -n "$DATABASE_DRIVER" ]; then
+    DB_DRIVER="$DATABASE_DRIVER"
+fi
+if [ -n "$DATABASE_USER" ]; then
+    DB_USER="$DATABASE_USER"
+fi
+if [ -n "$DATABASE_PASSWORD" ]; then
+    DB_PASSWORD="$DATABASE_PASSWORD"
+fi
+
+# Agregar configuración de base de datos al archivo XML
+if [ -n "$DB_DRIVER" ]; then
+    echo "    <entry key='database.driver'>$DB_DRIVER</entry>" >> "$CONFIG_FILE"
+    echo "  - Configurado DATABASE_DRIVER: $DB_DRIVER"
+fi
+
+if [ -n "$DB_URL" ]; then
+    echo "    <entry key='database.url'>$DB_URL</entry>" >> "$CONFIG_FILE"
     echo "  - Configurado DATABASE_URL"
 fi
 
-if [ -n "$DATABASE_USER" ]; then
-    echo "    <entry key='database.user'>$DATABASE_USER</entry>" >> "$CONFIG_FILE"
+if [ -n "$DB_USER" ]; then
+    echo "    <entry key='database.user'>$DB_USER</entry>" >> "$CONFIG_FILE"
     echo "  - Configurado DATABASE_USER"
 fi
 
-if [ -n "$DATABASE_PASSWORD" ]; then
-    echo "    <entry key='database.password'>$DATABASE_PASSWORD</entry>" >> "$CONFIG_FILE"
+if [ -n "$DB_PASSWORD" ]; then
+    echo "    <entry key='database.password'>$DB_PASSWORD</entry>" >> "$CONFIG_FILE"
     echo "  - Configurado DATABASE_PASSWORD"
 fi
 
 # Si no hay configuración de base de datos, usar valores por defecto (H2)
-if [ -z "$DATABASE_DRIVER" ] && [ -z "$DATABASE_URL" ]; then
+if [ -z "$DB_DRIVER" ] && [ -z "$DB_URL" ]; then
     echo "  - Usando base de datos H2 por defecto (en memoria)"
     cat >> "$CONFIG_FILE" <<'DEFAULTH2'
     <entry key='database.driver'>org.h2.Driver</entry>
