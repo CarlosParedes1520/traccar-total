@@ -120,7 +120,8 @@ public class NotificatorFirebase extends Notificator {
             }
 
             try {
-                LOGGER.info("Sending Firebase notification to user {} with {} tokens", user.getId(), registrationTokens.size());
+                LOGGER.info("Sending Firebase notification to user {} with {} tokens",
+                        user.getId(), registrationTokens.size());
                 var result = firebaseMessaging.sendEachForMulticast(messageBuilder.build());
                 LOGGER.info("Firebase notification sent, success count: {}, failure count: {}",
                         result.getSuccessCount(), result.getFailureCount());

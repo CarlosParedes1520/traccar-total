@@ -1,0 +1,28 @@
+[Unit]
+Description=Traccar GPS Tracking Server
+Documentation=https://www.traccar.org/
+After=network.target
+
+[Service]
+Type=simple
+User=traccar
+Group=traccar
+WorkingDirectory=/opt/traccar
+ExecStart=/usr/bin/java -Xmx512m -jar /opt/traccar/tracker-server.jar /opt/traccar/conf/traccar.xml
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=traccar
+
+# Límites de recursos
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Seguridad
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target
+

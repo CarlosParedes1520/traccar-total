@@ -196,7 +196,8 @@ public class NotificationManager {
         }
     }
     public void saveHistory(
-            User user, org.traccar.model.Notification notification, Event event, Position position, String notificator) {
+            User user, org.traccar.model.Notification notification, Event event, Position position,
+            String notificator) {
         try {
             NotificationPush push = new NotificationPush();
             push.setUserId(user.getId());
