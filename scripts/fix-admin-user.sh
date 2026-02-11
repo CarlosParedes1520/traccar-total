@@ -34,8 +34,9 @@ fi
 
 echo "MySQL connector: $MYSQL_JAR"
 
-# Crear script Java
-JAVA_SCRIPT=$(mktemp /tmp/fix-admin-XXXXXX.java)
+# Crear script Java con nombre correcto
+JAVA_DIR=$(mktemp -d)
+JAVA_SCRIPT="$JAVA_DIR/FixAdminUser.java"
 
 cat > "$JAVA_SCRIPT" << 'JAVA_EOF'
 import java.sql.Connection;
@@ -211,17 +212,17 @@ JAVA_EOF
 echo "Compilando script..."
 javac -cp "$MYSQL_JAR" "$JAVA_SCRIPT" || {
     echo "ERROR: No se pudo compilar"
-    rm -f "$JAVA_SCRIPT"
+    rm -rf "$JAVA_DIR"
     exit 1
 }
 
 # Ejecutar
 echo "Ejecutando corrección..."
-java -cp "$(dirname "$JAVA_SCRIPT"):$MYSQL_JAR" FixAdminUser \
+java -cp "$JAVA_DIR:$MYSQL_JAR" FixAdminUser \
     "$DB_HOST" "$DB_PORT" "$DB_NAME" "$DB_USER" "$DB_PASS"
 
 # Limpiar
-rm -f "$JAVA_SCRIPT" "$(dirname "$JAVA_SCRIPT")/FixAdminUser.class"
+rm -rf "$JAVA_DIR"
 
 echo ""
 echo "=========================================="
