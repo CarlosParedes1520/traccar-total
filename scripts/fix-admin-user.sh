@@ -18,7 +18,15 @@ DB_PASS="${DB_PASS:-Ph15eter\$2025\$R}"
 
 # Buscar JAR de MySQL
 MYSQL_JAR=""
-if [ -d "/opt/traccar-total/target/lib" ]; then
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Buscar en orden de prioridad
+if [ -d "$PROJECT_ROOT/target/lib" ]; then
+    MYSQL_JAR=$(find "$PROJECT_ROOT/target/lib" -name "mysql-connector-j-*.jar" 2>/dev/null | head -n 1)
+fi
+
+if [ -z "$MYSQL_JAR" ] && [ -d "/opt/traccar-total/target/lib" ]; then
     MYSQL_JAR=$(find /opt/traccar-total/target/lib -name "mysql-connector-j-*.jar" 2>/dev/null | head -n 1)
 fi
 
@@ -28,6 +36,7 @@ fi
 
 if [ -z "$MYSQL_JAR" ]; then
     echo "ERROR: No se encontró mysql-connector-j-*.jar"
+    echo "Buscando en: $PROJECT_ROOT/target/lib"
     echo "Busca en: /opt/traccar-total/target/lib o /opt/traccar/lib"
     exit 1
 fi
@@ -124,7 +133,9 @@ public class FixAdminUser {
             // Verificar usuario admin
             ResultSet rs = stmt.executeQuery(
                 "SELECT id, name, email, login, administrator, disabled, " +
-                "hashedPassword IS NULL OR hashedPassword = '' as sin_password " +
+                "hashedPassword, salt, " +
+                "(hashedPassword IS NULL OR hashedPassword = '') as sin_password, " +
+                "(salt IS NULL OR salt = '') as sin_salt " +
                 "FROM tc_users WHERE email = 'admin' OR login = 'admin'");
             
             if (rs.next()) {
@@ -135,6 +146,9 @@ public class FixAdminUser {
                 boolean isAdmin = rs.getBoolean("administrator");
                 boolean disabled = rs.getBoolean("disabled");
                 boolean sinPassword = rs.getBoolean("sin_password");
+                boolean sinSalt = rs.getBoolean("sin_salt");
+                String currentHash = rs.getString("hashedPassword");
+                String currentSalt = rs.getString("salt");
                 
                 System.out.println("Usuario encontrado:");
                 System.out.println("  ID: " + userId);
@@ -144,13 +158,16 @@ public class FixAdminUser {
                 System.out.println("  Administrador: " + isAdmin);
                 System.out.println("  Deshabilitado: " + disabled);
                 System.out.println("  Sin password: " + sinPassword);
+                System.out.println("  Sin salt: " + sinSalt);
+                System.out.println("  Hash actual: " + (currentHash != null ? currentHash.substring(0, Math.min(20, currentHash.length())) + "..." : "NULL"));
+                System.out.println("  Salt actual: " + (currentSalt != null ? currentSalt.substring(0, Math.min(20, currentSalt.length())) + "..." : "NULL"));
                 System.out.println("");
                 
                 // Corregir problemas
                 boolean needsUpdate = false;
                 HashingResult result = null;
                 
-                if (sinPassword || !isAdmin || disabled) {
+                if (sinPassword || sinSalt || !isAdmin || disabled) {
                     System.out.println("Corrigiendo usuario...");
                     result = createHash("admin");
                     needsUpdate = true;
