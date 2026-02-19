@@ -111,15 +111,23 @@ public abstract class BaseObjectResource<T extends BaseModel> extends BaseResour
 
         permissionsService.checkEdit(getUserId(), entity, false, skipReadonly);
 
-        storage.updateObject(entity, new Request(
-                new Columns.Exclude("id"),
-                new Condition.Equals("id", entity.getId())));
-        if (entity instanceof User user) {
+        // For User objects, exclude hashedPassword and salt from the main update
+        // to prevent them from being set to NULL when not provided
+        if (entity instanceof User) {
+            storage.updateObject(entity, new Request(
+                    new Columns.Exclude("id", "hashedPassword", "salt"),
+                    new Condition.Equals("id", entity.getId())));
+            User user = (User) entity;
+            // Only update password if a new one was provided
             if (user.getHashedPassword() != null) {
                 storage.updateObject(entity, new Request(
                         new Columns.Include("hashedPassword", "salt"),
                         new Condition.Equals("id", entity.getId())));
             }
+        } else {
+            storage.updateObject(entity, new Request(
+                    new Columns.Exclude("id"),
+                    new Condition.Equals("id", entity.getId())));
         }
         cacheManager.invalidateObject(true, entity.getClass(), entity.getId(), ObjectOperation.UPDATE);
         actionLogger.edit(request, getUserId(), entity);
