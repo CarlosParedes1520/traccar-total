@@ -1,0 +1,29 @@
+meta {
+  name: Send Command to Device
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/commands/send?deviceId={{deviceId}}
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "type": "engineStop",
+  "textChannel": false,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

@@ -1,0 +1,11 @@
+meta {
+  name: OIDC Authorize
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/oidc/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=http://localhost:3000/callback&state=random_state&scope=openid&response_type=code
+  auth: none
+}
+

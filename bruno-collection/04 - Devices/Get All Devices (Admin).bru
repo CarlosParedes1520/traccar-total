@@ -1,0 +1,16 @@
+meta {
+  name: Get All Devices (Admin)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/devices?all=true
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

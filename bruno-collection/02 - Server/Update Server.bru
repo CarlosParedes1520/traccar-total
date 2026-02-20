@@ -1,0 +1,39 @@
+meta {
+  name: Update Server
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/server
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": 0,
+  "registration": false,
+  "readonly": false,
+  "deviceReadonly": false,
+  "limitCommands": false,
+  "map": "osm",
+  "latitude": 0.0,
+  "longitude": 0.0,
+  "zoom": 0,
+  "version": "6.11.1",
+  "forceSettings": false,
+  "coordinateFormat": "",
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

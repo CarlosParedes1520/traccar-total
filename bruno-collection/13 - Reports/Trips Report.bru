@@ -1,0 +1,16 @@
+meta {
+  name: Trips Report
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/reports/trips?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

@@ -1,0 +1,28 @@
+meta {
+  name: Remove Permission
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/permissions
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "userId": {{userId}},
+  "deviceId": {{deviceId}}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

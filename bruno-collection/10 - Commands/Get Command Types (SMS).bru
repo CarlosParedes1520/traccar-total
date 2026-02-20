@@ -1,0 +1,16 @@
+meta {
+  name: Get Command Types (SMS)
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/commands/types?deviceId={{deviceId}}&textChannel=true
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

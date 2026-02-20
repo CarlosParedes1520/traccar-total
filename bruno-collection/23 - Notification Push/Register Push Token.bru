@@ -1,0 +1,28 @@
+meta {
+  name: Register Push Token
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/notifications/push
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "token": "FCM_TOKEN_HERE",
+  "type": "fcm"
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

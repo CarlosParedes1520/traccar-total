@@ -1,0 +1,16 @@
+meta {
+  name: Get Positions as KML
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/positions/kml?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

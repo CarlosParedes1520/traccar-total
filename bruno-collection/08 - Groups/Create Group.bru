@@ -1,0 +1,29 @@
+meta {
+  name: Create Group
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/groups
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "name": "Test Group",
+  "groupId": null,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

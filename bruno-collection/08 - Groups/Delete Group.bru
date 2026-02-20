@@ -1,0 +1,16 @@
+meta {
+  name: Delete Group
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/groups/1
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

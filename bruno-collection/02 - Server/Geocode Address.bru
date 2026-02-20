@@ -1,0 +1,16 @@
+meta {
+  name: Geocode Address
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/server/geocode?latitude=40.7128&longitude=-74.0060
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

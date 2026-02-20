@@ -1,0 +1,27 @@
+meta {
+  name: Send Saved Command
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/commands/send?deviceId={{deviceId}}
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": 1
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

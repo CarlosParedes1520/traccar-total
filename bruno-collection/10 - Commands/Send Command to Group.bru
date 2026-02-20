@@ -1,0 +1,29 @@
+meta {
+  name: Send Command to Group
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/commands/send?groupId=1
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "type": "engineStop",
+  "textChannel": false,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

@@ -1,0 +1,30 @@
+meta {
+  name: Create Attribute
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/attributes/computed
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "description": "Fuel Consumption",
+  "attribute": "fuelConsumption",
+  "expression": "fuel / distance * 100",
+  "type": "Number"
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

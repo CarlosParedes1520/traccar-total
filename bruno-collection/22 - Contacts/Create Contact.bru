@@ -1,0 +1,29 @@
+meta {
+  name: Create Contact
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/contacts
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "name": "Emergency Contact",
+  "phone": "+1234567890",
+  "email": "contact@example.com"
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

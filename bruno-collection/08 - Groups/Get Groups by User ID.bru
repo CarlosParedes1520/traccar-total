@@ -1,0 +1,16 @@
+meta {
+  name: Get Groups by User ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/groups?userId={{userId}}
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

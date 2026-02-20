@@ -1,0 +1,30 @@
+meta {
+  name: Update Group
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/groups/1
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": 1,
+  "name": "Updated Group Name",
+  "groupId": null,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

@@ -1,0 +1,16 @@
+meta {
+  name: Reboot Server
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/server/reboot
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

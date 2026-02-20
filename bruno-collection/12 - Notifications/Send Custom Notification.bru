@@ -1,0 +1,30 @@
+meta {
+  name: Send Custom Notification
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/notifications/send/mail?userId={{userId}}
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "subject": "Test Notification",
+  "digest": "Short summary",
+  "body": "This is a test notification message",
+  "priority": false
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

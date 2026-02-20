@@ -1,0 +1,16 @@
+meta {
+  name: Get Users by User ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/users?userId={{userId}}
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

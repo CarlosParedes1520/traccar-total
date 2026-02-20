@@ -1,0 +1,32 @@
+meta {
+  name: Update Geofence
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/geofences/1
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": 1,
+  "name": "Updated Geofence",
+  "description": "Updated description",
+  "area": "CIRCLE (40.7128 -74.0060, 200)",
+  "calendarId": null,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

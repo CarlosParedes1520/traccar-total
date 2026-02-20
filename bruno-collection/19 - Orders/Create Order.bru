@@ -1,0 +1,31 @@
+meta {
+  name: Create Order
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/orders
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "uniqueId": "ORDER001",
+  "description": "Delivery order",
+  "fromAddress": "123 Main St, City",
+  "toAddress": "456 Oak Ave, City",
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

@@ -1,0 +1,31 @@
+meta {
+  name: Update Attribute
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/attributes/computed/1
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": 1,
+  "description": "Updated Fuel Consumption",
+  "attribute": "fuelConsumption",
+  "expression": "fuel / distance * 100",
+  "type": "Number"
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

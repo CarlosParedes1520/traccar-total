@@ -1,0 +1,16 @@
+meta {
+  name: Get Session Info
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/session
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: admin
+  password: admin
+}

@@ -1,0 +1,35 @@
+meta {
+  name: Create Device
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/devices
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "name": "Test Device",
+  "uniqueId": "123456789",
+  "status": "offline",
+  "disabled": false,
+  "phone": "+1234567890",
+  "model": "GT06",
+  "contact": "John Doe",
+  "category": "Vehicle",
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

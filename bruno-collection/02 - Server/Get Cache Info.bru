@@ -1,0 +1,16 @@
+meta {
+  name: Get Cache Info
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/server/cache
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

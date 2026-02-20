@@ -1,0 +1,16 @@
+meta {
+  name: Get All Orders
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/orders
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

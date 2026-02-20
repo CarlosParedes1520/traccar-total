@@ -1,0 +1,32 @@
+meta {
+  name: Update Maintenance
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/maintenance/1
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": 1,
+  "name": "Updated Oil Change",
+  "type": "engineHours",
+  "start": 0,
+  "period": 150,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

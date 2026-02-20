@@ -1,0 +1,16 @@
+meta {
+  name: Delete Maintenance
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/maintenance/1
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

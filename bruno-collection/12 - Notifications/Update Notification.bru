@@ -1,0 +1,33 @@
+meta {
+  name: Update Notification
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/notifications/1
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": 1,
+  "type": "geofenceEnter",
+  "description": "Updated notification",
+  "always": true,
+  "notificators": "web,mail,sms",
+  "calendarId": null,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

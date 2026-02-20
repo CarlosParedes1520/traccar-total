@@ -1,0 +1,29 @@
+meta {
+  name: Create Calendar
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/calendars
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "name": "Work Schedule",
+  "data": "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Traccar//NONSGML v1.0//EN\nEND:VCALENDAR",
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

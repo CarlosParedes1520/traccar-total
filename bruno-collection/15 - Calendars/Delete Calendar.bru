@@ -1,0 +1,16 @@
+meta {
+  name: Delete Calendar
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/calendars/1
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

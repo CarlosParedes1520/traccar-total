@@ -1,0 +1,29 @@
+meta {
+  name: Create Driver
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/drivers
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "name": "John Doe",
+  "uniqueId": "DRIVER001",
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

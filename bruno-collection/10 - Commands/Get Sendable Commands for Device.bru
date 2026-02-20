@@ -1,0 +1,16 @@
+meta {
+  name: Get Sendable Commands for Device
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/commands/send?deviceId={{deviceId}}
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

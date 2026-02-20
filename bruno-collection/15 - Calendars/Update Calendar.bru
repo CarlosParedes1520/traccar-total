@@ -1,0 +1,30 @@
+meta {
+  name: Update Calendar
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/calendars/1
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": 1,
+  "name": "Updated Calendar",
+  "data": "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Traccar//NONSGML v1.0//EN\nEND:VCALENDAR",
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

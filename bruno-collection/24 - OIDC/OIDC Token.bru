@@ -1,0 +1,25 @@
+meta {
+  name: OIDC Token
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/oidc/token
+  body: form-urlencoded
+  auth: none
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded
+}
+
+body:form-urlencoded {
+  grant_type: authorization_code
+  code: YOUR_AUTHORIZATION_CODE
+  redirect_uri: http://localhost:3000/callback
+  client_id: YOUR_CLIENT_ID
+  client_secret: YOUR_CLIENT_SECRET
+  code_verifier: YOUR_CODE_VERIFIER
+}
+

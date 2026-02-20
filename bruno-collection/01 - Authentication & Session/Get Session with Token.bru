@@ -1,0 +1,26 @@
+meta {
+  name: Get Session with Token
+  type: http
+  seq: 3
+}
+
+docs {
+# GET /api/session?token=XXX - Verificar Sesión con Token
+
+## ¿Qué hace?
+Verifica un token y devuelve información del usuario.
+
+## Pasos:
+1. Primero haz POST /api/session (login)
+2. Luego POST /api/session/token (generar token)
+3. Usa ese token aquí: ?token=TU_TOKEN
+
+## Alternativa:
+Puedes usar Basic Auth en lugar del token (más fácil).
+}
+
+get {
+  url: {{baseUrl}}/session?token=YOUR_TOKEN_HERE
+  auth: none
+}
+

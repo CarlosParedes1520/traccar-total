@@ -1,0 +1,16 @@
+meta {
+  name: Get Notificators
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/notifications/notificators
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

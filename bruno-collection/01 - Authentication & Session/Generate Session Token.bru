@@ -1,0 +1,46 @@
+meta {
+  name: Generate Session Token
+  type: http
+  seq: 5
+}
+
+docs {
+# POST /api/session/token - Generar Token
+
+## ¿Qué hace?
+Genera un token de autenticación que puedes usar en lugar de Basic Auth.
+
+## Requisitos:
+- Debes estar autenticado primero (haz POST /api/session antes)
+- O usa Basic Auth en este request (ya configurado)
+
+## Pasos:
+1. POST /api/session (login) - OPCIONAL si usas Basic Auth
+2. POST /api/session/token (este request) - Genera token
+3. Guarda el token en una variable: {{token}}
+4. Usa el token: GET /api/session?token={{token}}
+
+## Nota:
+Si solo usas Bruno, es más fácil usar Basic Auth directamente.
+Los tokens son útiles para APIs públicas o compartir acceso.
+}
+
+post {
+  url: {{baseUrl}}/session/token
+  body: form-urlencoded
+  auth: basic
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded
+}
+
+body:form-urlencoded {
+  expiration: 2026-12-31T23:59:59Z
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

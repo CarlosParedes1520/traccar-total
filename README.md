@@ -50,3 +50,7 @@ Please read [build from source documentation](https://www.traccar.org/build/) on
     See the License for the specific language governing permissions and
     limitations under the License.
 # traccar-total
+
+#Ejecutar traccar 
+java -jar target/tracker-server.jar debug.xml
+

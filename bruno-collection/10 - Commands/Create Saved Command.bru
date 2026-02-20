@@ -1,0 +1,31 @@
+meta {
+  name: Create Saved Command
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/commands
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "deviceId": {{deviceId}},
+  "description": "Engine Stop",
+  "type": "engineStop",
+  "textChannel": false,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

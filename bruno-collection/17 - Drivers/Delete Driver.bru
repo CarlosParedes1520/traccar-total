@@ -1,0 +1,16 @@
+meta {
+  name: Delete Driver
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/drivers/1
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

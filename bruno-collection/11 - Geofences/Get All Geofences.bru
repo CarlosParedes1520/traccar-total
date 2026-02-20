@@ -1,0 +1,16 @@
+meta {
+  name: Get All Geofences
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/geofences
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

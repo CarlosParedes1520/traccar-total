@@ -1,0 +1,32 @@
+meta {
+  name: Update Saved Command
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{baseUrl}}/commands/1
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": 1,
+  "deviceId": {{deviceId}},
+  "description": "Updated Command",
+  "type": "engineStop",
+  "textChannel": false,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

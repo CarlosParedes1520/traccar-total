@@ -1,0 +1,28 @@
+meta {
+  name: Add Permission - Device to Geofence
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/permissions
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "deviceId": {{deviceId}},
+  "geofenceId": 1
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

@@ -1,0 +1,16 @@
+meta {
+  name: Get Command Types
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/commands/types?deviceId={{deviceId}}
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

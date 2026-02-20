@@ -1,0 +1,28 @@
+meta {
+  name: Test Attribute Expression
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/attributes/computed/test
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "expression": "fuel / distance * 100",
+  "type": "Number"
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

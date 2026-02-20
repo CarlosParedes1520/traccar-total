@@ -1,0 +1,16 @@
+meta {
+  name: Get Event by ID
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/events/1
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

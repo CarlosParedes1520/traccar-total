@@ -1,0 +1,16 @@
+meta {
+  name: Get All Calendars
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/calendars
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

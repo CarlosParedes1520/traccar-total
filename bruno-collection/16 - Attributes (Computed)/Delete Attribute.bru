@@ -1,0 +1,16 @@
+meta {
+  name: Delete Attribute
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/attributes/computed/1
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

@@ -1,0 +1,16 @@
+meta {
+  name: Get Positions by ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/positions?id=1&id=2
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

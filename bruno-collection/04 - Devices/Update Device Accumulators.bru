@@ -1,0 +1,29 @@
+meta {
+  name: Update Device Accumulators
+  type: http
+  seq: 9
+}
+
+put {
+  url: {{baseUrl}}/devices/{{deviceId}}/accumulators
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "deviceId": {{deviceId}},
+  "totalDistance": 15000.5,
+  "hours": 120.5
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

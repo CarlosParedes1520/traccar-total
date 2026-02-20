@@ -1,0 +1,16 @@
+meta {
+  name: Route Report
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/reports/route?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

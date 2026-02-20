@@ -1,0 +1,16 @@
+meta {
+  name: Simulate Event
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/notifications/simulate
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

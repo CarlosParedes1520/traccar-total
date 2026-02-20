@@ -1,0 +1,16 @@
+meta {
+  name: Test Notification
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/notifications/test
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

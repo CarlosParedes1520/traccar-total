@@ -1,0 +1,26 @@
+meta {
+  name: Share Device
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/devices/share
+  body: form-urlencoded
+  auth: basic
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded
+}
+
+body:form-urlencoded {
+  deviceId: {{deviceId}}
+  expiration: 2026-12-31T23:59:59Z
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

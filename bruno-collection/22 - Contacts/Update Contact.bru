@@ -1,0 +1,30 @@
+meta {
+  name: Update Contact
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/contacts/1
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": 1,
+  "name": "Updated Contact",
+  "phone": "+1234567890",
+  "email": "updated@example.com"
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

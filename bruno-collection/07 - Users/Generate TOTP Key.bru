@@ -1,0 +1,16 @@
+meta {
+  name: Generate TOTP Key
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/users/{{userId}}/totp
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

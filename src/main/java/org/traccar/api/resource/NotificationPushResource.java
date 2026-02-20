@@ -3,15 +3,18 @@ package org.traccar.api.resource;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.traccar.api.BaseResource;
 import org.traccar.model.Device;
 import org.traccar.model.Event;
 import org.traccar.model.User;
 import org.traccar.reports.model.ReportResponse;
+import org.traccar.model.ObjectOperation;
 import org.traccar.session.cache.CacheManager;
 import org.traccar.storage.StorageException;
 import org.traccar.storage.query.Columns;
@@ -19,11 +22,14 @@ import org.traccar.storage.query.Condition;
 import org.traccar.storage.query.Order;
 import org.traccar.storage.query.Request;
 
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Path("notifications/push")
 @Produces(MediaType.APPLICATION_JSON)
@@ -52,13 +58,14 @@ public class NotificationPushResource extends BaseResource {
         typeCondition = new Condition.Or(typeCondition, new Condition.Equals("type", Event.TYPE_IGNITION_OFF));
 
         var devices = storage.getObjects(Device.class, new Request(
-                new Columns.Include("id"),
+                new Columns.Include("id", "name"),
                 new Condition.Permission(User.class, getUserId(), Device.class)));
 
         if (devices.isEmpty()) {
             return new ReportResponse<>(Collections.emptyList(), 0, limit, (long) offset);
         }
 
+        // Build device condition more efficiently
         Condition deviceCondition = null;
         for (Device device : devices) {
             Condition equals = new Condition.Equals("deviceId", device.getId());
@@ -74,24 +81,109 @@ public class NotificationPushResource extends BaseResource {
         Request request = new Request(new Columns.All(), condition, order);
 
         Collection<Event> items = storage.getObjects(Event.class, request);
+        
+        // Fix N+1 query problem: Pre-fetch all device names in one query
         Map<Long, String> deviceNames = new HashMap<>();
-        for (Event event : items) {
-            long deviceId = event.getDeviceId();
-            if (!deviceNames.containsKey(deviceId)) {
+        Set<Long> deviceIds = items.stream()
+                .map(Event::getDeviceId)
+                .collect(Collectors.toSet());
+        
+        // Use already fetched devices map for quick lookup
+        Map<Long, Device> deviceMap = devices.stream()
+                .collect(Collectors.toMap(Device::getId, device -> device));
+        
+        // For any missing devices, fetch them in batch (should be rare)
+        Set<Long> missingDeviceIds = new HashSet<>(deviceIds);
+        missingDeviceIds.removeAll(deviceMap.keySet());
+        
+        if (!missingDeviceIds.isEmpty()) {
+            // Fetch missing devices in one query
+            for (Long deviceId : missingDeviceIds) {
                 Device device = cacheManager.getObject(Device.class, deviceId);
                 if (device == null) {
                     device = storage.getObject(Device.class, new Request(
                             new Columns.Include("id", "name"), new Condition.Equals("id", deviceId)));
                 }
                 if (device != null) {
-                    deviceNames.put(deviceId, device.getName());
+                    deviceMap.put(deviceId, device);
                 }
             }
-            event.setDeviceName(deviceNames.get(deviceId));
         }
+        
+        // Build device names map from device map
+        for (Long deviceId : deviceIds) {
+            Device device = deviceMap.get(deviceId);
+            if (device != null) {
+                deviceNames.put(deviceId, device.getName());
+            }
+        }
+        
+        // Set device names on events
+        for (Event event : items) {
+            event.setDeviceName(deviceNames.get(event.getDeviceId()));
+        }
+        
         long totalItems = storage.getCount(Event.class, new Request(condition));
 
         return new ReportResponse<>(items, totalItems, limit, (long) offset);
+    }
+
+    @POST
+    public Response registerToken(PushTokenRequest request) throws StorageException, Exception {
+        if (request == null || request.token == null || request.token.trim().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "Token is required"))
+                    .build();
+        }
+
+        User user = permissionsService.getUser(getUserId());
+        if (user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
+        String token = request.token.trim();
+        String type = request.type != null ? request.type.toLowerCase() : "fcm";
+
+        // Handle FCM token registration
+        if ("fcm".equals(type)) {
+            // Add token to notificationTokens attribute or set fcmtoken
+            if (user.hasAttribute("notificationTokens")) {
+                String existingTokens = user.getString("notificationTokens");
+                List<String> tokens = new java.util.ArrayList<>(
+                        java.util.Arrays.asList(existingTokens.split("[, ]")));
+                if (!tokens.contains(token)) {
+                    tokens.add(token);
+                    user.set("notificationTokens", String.join(",", tokens));
+                }
+            } else {
+                user.set("notificationTokens", token);
+            }
+            
+            // Also set fcmtoken for backward compatibility
+            if (user.getFcmtoken() == null || user.getFcmtoken().isEmpty()) {
+                user.setFcmtoken(token);
+            }
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "Unsupported token type: " + type))
+                    .build();
+        }
+
+        // Update user in storage
+        storage.updateObject(user, new Request(
+                new Columns.Include("attributes", "fcmtoken"),
+                new Condition.Equals("id", user.getId())));
+        
+        // Invalidate cache
+        cacheManager.invalidateObject(true, User.class, user.getId(), ObjectOperation.UPDATE);
+
+        return Response.noContent().build();
+    }
+
+    // Inner class for request body
+    public static class PushTokenRequest {
+        public String token;
+        public String type;
     }
 
 }

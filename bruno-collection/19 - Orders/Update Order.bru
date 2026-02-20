@@ -1,0 +1,32 @@
+meta {
+  name: Update Order
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/orders/1
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": 1,
+  "uniqueId": "ORDER001",
+  "description": "Updated delivery order",
+  "fromAddress": "123 Main St, City",
+  "toAddress": "456 Oak Ave, City",
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

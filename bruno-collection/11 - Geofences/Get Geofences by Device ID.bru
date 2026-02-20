@@ -1,0 +1,16 @@
+meta {
+  name: Get Geofences by Device ID
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/geofences?deviceId={{deviceId}}
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

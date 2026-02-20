@@ -1,0 +1,16 @@
+meta {
+  name: Get All Groups (Admin)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/groups?all=true
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

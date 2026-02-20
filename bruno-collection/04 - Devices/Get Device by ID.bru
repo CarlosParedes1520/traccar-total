@@ -1,0 +1,16 @@
+meta {
+  name: Get Device by ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/devices?id={{deviceId}}
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

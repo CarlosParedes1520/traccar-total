@@ -1,0 +1,21 @@
+meta {
+  name: Upload Device Image
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/devices/{{deviceId}}/image
+  body: file
+  auth: basic
+}
+
+headers {
+  Content-Type: image/jpeg
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

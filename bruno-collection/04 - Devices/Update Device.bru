@@ -1,0 +1,32 @@
+meta {
+  name: Update Device
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrl}}/devices/{{deviceId}}
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": {{deviceId}},
+  "name": "Updated Device Name",
+  "uniqueId": "123456789",
+  "status": "online",
+  "disabled": false,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

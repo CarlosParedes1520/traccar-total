@@ -1,0 +1,31 @@
+meta {
+  name: Create Maintenance
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/maintenance
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "name": "Oil Change",
+  "type": "engineHours",
+  "start": 0,
+  "period": 100,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

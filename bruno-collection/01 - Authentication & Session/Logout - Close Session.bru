@@ -1,0 +1,16 @@
+meta {
+  name: Logout - Close Session
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/session
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

@@ -1,0 +1,33 @@
+meta {
+  name: Update User
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/users/{{userId}}
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": {{userId}},
+  "name": "Updated User Name",
+  "email": "updated@example.com",
+  "readonly": false,
+  "administrator": false,
+  "disabled": false,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

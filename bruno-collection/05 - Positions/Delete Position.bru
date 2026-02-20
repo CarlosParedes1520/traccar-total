@@ -1,0 +1,16 @@
+meta {
+  name: Delete Position
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}/positions/1
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

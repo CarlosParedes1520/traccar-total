@@ -1,0 +1,2275 @@
+{
+  "version": "1",
+  "name": "Traccar API",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ],
+  "env": [
+    {
+      "name": "baseUrl",
+      "value": "http://localhost:8082/api",
+      "enabled": true
+    },
+    {
+      "name": "email",
+      "value": "admin",
+      "enabled": true
+    },
+    {
+      "name": "password",
+      "value": "admin",
+      "enabled": true
+    },
+    {
+      "name": "deviceId",
+      "value": "1",
+      "enabled": true
+    },
+    {
+      "name": "userId",
+      "value": "9",
+      "enabled": true
+    }
+  ],
+  "folders": [
+    {
+      "name": "01 - Authentication & Session",
+      "requests": [
+        {
+          "name": "Login - Create Session",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/session",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ],
+          "body": {
+            "mode": "urlencoded",
+            "urlencoded": [
+              {
+                "name": "email",
+                "value": "{{email}}",
+                "enabled": true
+              },
+              {
+                "name": "password",
+                "value": "{{password}}",
+                "enabled": true
+              }
+            ]
+          },
+          "tests": "bruno.test('Status is 200', () => {\n  expect(res.getStatus()).toBe(200);\n});\n\nbruno.test('Response has user data', () => {\n  const body = res.getBody();\n  expect(body).toHaveProperty('id');\n  expect(body).toHaveProperty('email');\n});"
+        },
+        {
+          "name": "Get Session Info",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/session",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Session with Token",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/session?token=YOUR_TOKEN_HERE"
+        },
+        {
+          "name": "Logout - Close Session",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/session",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Generate Session Token",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/session/token",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ],
+          "body": {
+            "mode": "urlencoded",
+            "urlencoded": [
+              {
+                "name": "expiration",
+                "value": "2026-12-31T23:59:59Z",
+                "enabled": true
+              }
+            ]
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Revoke Session Token",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/session/token/revoke",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ],
+          "body": {
+            "mode": "urlencoded",
+            "urlencoded": [
+              {
+                "name": "token",
+                "value": "YOUR_TOKEN_HERE",
+                "enabled": true
+              }
+            ]
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Server",
+      "requests": [
+        {
+          "name": "Get Server Info",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/server"
+        },
+        {
+          "name": "Update Server",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/server",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": 0,\n  \"registration\": false,\n  \"readonly\": false,\n  \"deviceReadonly\": false,\n  \"limitCommands\": false,\n  \"map\": \"osm\",\n  \"latitude\": 0.0,\n  \"longitude\": 0.0,\n  \"zoom\": 0,\n  \"version\": \"6.11.1\",\n  \"forceSettings\": false,\n  \"coordinateFormat\": \"\",\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Geocode Address",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/server/geocode?latitude=40.7128&longitude=-74.0060",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Timezones",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/server/timezones",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Upload File",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/server/file/custom/file.txt",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "text/plain"
+            }
+          ],
+          "body": {
+            "mode": "file",
+            "file": ""
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Garbage Collection",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/server/gc",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Cache Info",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/server/cache",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Reboot Server",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/server/reboot",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Health",
+      "requests": [
+        {
+          "name": "Health Check",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/health"
+        }
+      ]
+    },
+    {
+      "name": "04 - Devices",
+      "requests": [
+        {
+          "name": "Get All Devices",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/devices",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get All Devices (Admin)",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/devices?all=true",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Device by ID",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/devices?id={{deviceId}}",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Device by Unique ID",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/devices?uniqueId=123456789",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Devices by User ID",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/devices?userId={{userId}}",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Create Device",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/devices",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"name\": \"Test Device\",\n  \"uniqueId\": \"123456789\",\n  \"status\": \"offline\",\n  \"disabled\": false,\n  \"phone\": \"+1234567890\",\n  \"model\": \"GT06\",\n  \"contact\": \"John Doe\",\n  \"category\": \"Vehicle\",\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Update Device",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/devices/{{deviceId}}",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": {{deviceId}},\n  \"name\": \"Updated Device Name\",\n  \"uniqueId\": \"123456789\",\n  \"status\": \"online\",\n  \"disabled\": false,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete Device",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/devices/{{deviceId}}",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Update Device Accumulators",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/devices/{{deviceId}}/accumulators",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"deviceId\": {{deviceId}},\n  \"totalDistance\": 15000.5,\n  \"hours\": 120.5\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Upload Device Image",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/devices/{{deviceId}}/image",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "image/jpeg"
+            }
+          ],
+          "body": {
+            "mode": "file",
+            "file": ""
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Share Device",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/devices/share",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ],
+          "body": {
+            "mode": "urlencoded",
+            "urlencoded": [
+              {
+                "name": "deviceId",
+                "value": "{{deviceId}}",
+                "enabled": true
+              },
+              {
+                "name": "expiration",
+                "value": "2026-12-31T23:59:59Z",
+                "enabled": true
+              }
+            ]
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Positions",
+      "requests": [
+        {
+          "name": "Get All Positions",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/positions",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Positions by Device ID",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/positions?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Positions by ID",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/positions?id=1&id=2",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Positions as CSV",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/positions?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "headers": [
+            {
+              "name": "Accept",
+              "value": "text/csv"
+            }
+          ],
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Positions as GPX",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/positions?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "headers": [
+            {
+              "name": "Accept",
+              "value": "application/gpx+xml"
+            }
+          ],
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Positions as KML",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/positions/kml?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete Position",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/positions/1",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete Positions by Device and Time Range",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/positions?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Events",
+      "requests": [
+        {
+          "name": "Get Event by ID",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/events/1",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Users",
+      "requests": [
+        {
+          "name": "Get All Users",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/users",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Users by User ID",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/users?userId={{userId}}",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/users",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"readonly\": false,\n  \"administrator\": false,\n  \"disabled\": false,\n  \"deviceLimit\": -1,\n  \"userLimit\": 0,\n  \"deviceReadonly\": false,\n  \"limitCommands\": false,\n  \"disableReports\": false,\n  \"fixedEmail\": false,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/users/{{userId}}",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": {{userId}},\n  \"name\": \"Updated User Name\",\n  \"email\": \"updated@example.com\",\n  \"readonly\": false,\n  \"administrator\": false,\n  \"disabled\": false,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/users/{{userId}}",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Generate TOTP Key",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/users/{{userId}}/totp",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Groups",
+      "requests": [
+        {
+          "name": "Get All Groups",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/groups",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get All Groups (Admin)",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/groups?all=true",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Groups by User ID",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/groups?userId={{userId}}",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Create Group",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/groups",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"name\": \"Test Group\",\n  \"groupId\": null,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Update Group",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/groups/1",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": 1,\n  \"name\": \"Updated Group Name\",\n  \"groupId\": null,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete Group",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/groups/1",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - Permissions",
+      "requests": [
+        {
+          "name": "Add Permission - User to Device",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/permissions",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"userId\": {{userId}},\n  \"deviceId\": {{deviceId}}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Add Permission - User to Group",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/permissions",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"userId\": {{userId}},\n  \"groupId\": 1\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Add Permission - Device to Geofence",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/permissions",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"deviceId\": {{deviceId}},\n  \"geofenceId\": 1\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Add Permission - Device to Notification",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/permissions",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"deviceId\": {{deviceId}},\n  \"notificationId\": 1\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Remove Permission",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/permissions",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"userId\": {{userId}},\n  \"deviceId\": {{deviceId}}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Bulk Add Permissions",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/permissions/bulk",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "[\n  {\n    \"userId\": {{userId}},\n    \"deviceId\": {{deviceId}}\n  },\n  {\n    \"userId\": {{userId}},\n    \"groupId\": 1\n  }\n]"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Bulk Remove Permissions",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/permissions/bulk",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "[\n  {\n    \"userId\": {{userId}},\n    \"deviceId\": {{deviceId}}\n  }\n]"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Commands",
+      "requests": [
+        {
+          "name": "Get All Commands",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/commands",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Commands by Device ID",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/commands?deviceId={{deviceId}}",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Command Types",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/commands/types?deviceId={{deviceId}}",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Command Types (SMS)",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/commands/types?deviceId={{deviceId}}&textChannel=true",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Create Saved Command",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/commands",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"deviceId\": {{deviceId}},\n  \"description\": \"Engine Stop\",\n  \"type\": \"engineStop\",\n  \"textChannel\": false,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Update Saved Command",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/commands/1",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": 1,\n  \"deviceId\": {{deviceId}},\n  \"description\": \"Updated Command\",\n  \"type\": \"engineStop\",\n  \"textChannel\": false,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete Saved Command",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/commands/1",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Sendable Commands for Device",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/commands/send?deviceId={{deviceId}}",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Send Command to Device",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/commands/send?deviceId={{deviceId}}",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"type\": \"engineStop\",\n  \"textChannel\": false,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Send Command to Group",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/commands/send?groupId=1",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"type\": \"engineStop\",\n  \"textChannel\": false,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Send Saved Command",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/commands/send?deviceId={{deviceId}}",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": 1\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 - Geofences",
+      "requests": [
+        {
+          "name": "Get All Geofences",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/geofences",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Geofences by Device ID",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/geofences?deviceId={{deviceId}}",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Create Geofence",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/geofences",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"name\": \"Office Area\",\n  \"description\": \"Main office geofence\",\n  \"area\": \"CIRCLE (40.7128 -74.0060, 100)\",\n  \"calendarId\": null,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Update Geofence",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/geofences/1",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": 1,\n  \"name\": \"Updated Geofence\",\n  \"description\": \"Updated description\",\n  \"area\": \"CIRCLE (40.7128 -74.0060, 200)\",\n  \"calendarId\": null,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete Geofence",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/geofences/1",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 - Notifications",
+      "requests": [
+        {
+          "name": "Get All Notifications",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/notifications",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Notification Types",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/notifications/types",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Get Notificators",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/notifications/notificators",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Create Notification",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/notifications",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"type\": \"geofenceEnter\",\n  \"description\": \"Enter office geofence\",\n  \"always\": false,\n  \"notificators\": \"web,mail\",\n  \"calendarId\": null,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Update Notification",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/notifications/1",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": 1,\n  \"type\": \"geofenceEnter\",\n  \"description\": \"Updated notification\",\n  \"always\": true,\n  \"notificators\": \"web,mail,sms\",\n  \"calendarId\": null,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete Notification",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/notifications/1",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Test Notification",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/notifications/test",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Test Notification by Type",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/notifications/test/mail",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Send Custom Notification",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/notifications/send/mail?userId={{userId}}",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"subject\": \"Test Notification\",\n  \"digest\": \"Short summary\",\n  \"body\": \"This is a test notification message\",\n  \"priority\": false\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Simulate Event",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/notifications/simulate",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 - Reports",
+      "requests": [
+        {
+          "name": "Route Report",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/reports/route?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Route Report (Excel)",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/reports/route/xlsx?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Events Report",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/reports/events?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Events Report (Excel)",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/reports/events/xlsx?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Summary Report",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/reports/summary?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Summary Report (Excel)",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/reports/summary/xlsx?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Trips Report",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/reports/trips?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Trips Report (Excel)",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/reports/trips/xlsx?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Stops Report",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/reports/stops?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Stops Report (Excel)",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/reports/stops/xlsx?deviceId={{deviceId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Devices Report (Excel)",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/reports/devices/xlsx",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 - Statistics",
+      "requests": [
+        {
+          "name": "Get Statistics",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/statistics?from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 - Calendars",
+      "requests": [
+        {
+          "name": "Get All Calendars",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/calendars",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Create Calendar",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/calendars",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"name\": \"Work Schedule\",\n  \"data\": \"BEGIN:VCALENDAR\\nVERSION:2.0\\nPRODID:-//Traccar//NONSGML v1.0//EN\\nEND:VCALENDAR\",\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Update Calendar",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/calendars/1",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": 1,\n  \"name\": \"Updated Calendar\",\n  \"data\": \"BEGIN:VCALENDAR\\nVERSION:2.0\\nPRODID:-//Traccar//NONSGML v1.0//EN\\nEND:VCALENDAR\",\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete Calendar",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/calendars/1",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "16 - Attributes (Computed)",
+      "requests": [
+        {
+          "name": "Get All Attributes",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/attributes/computed",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Create Attribute",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/attributes/computed",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"description\": \"Fuel Consumption\",\n  \"attribute\": \"fuelConsumption\",\n  \"expression\": \"fuel / distance * 100\",\n  \"type\": \"Number\"\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Update Attribute",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/attributes/computed/1",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": 1,\n  \"description\": \"Updated Fuel Consumption\",\n  \"attribute\": \"fuelConsumption\",\n  \"expression\": \"fuel / distance * 100\",\n  \"type\": \"Number\"\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete Attribute",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/attributes/computed/1",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Test Attribute Expression",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/attributes/computed/test",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"expression\": \"fuel / distance * 100\",\n  \"type\": \"Number\"\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "17 - Drivers",
+      "requests": [
+        {
+          "name": "Get All Drivers",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/drivers",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Create Driver",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/drivers",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"name\": \"John Doe\",\n  \"uniqueId\": \"DRIVER001\",\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Update Driver",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/drivers/1",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": 1,\n  \"name\": \"Updated Driver Name\",\n  \"uniqueId\": \"DRIVER001\",\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete Driver",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/drivers/1",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "18 - Maintenance",
+      "requests": [
+        {
+          "name": "Get All Maintenance",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/maintenance",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Create Maintenance",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/maintenance",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"name\": \"Oil Change\",\n  \"type\": \"engineHours\",\n  \"start\": 0,\n  \"period\": 100,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Update Maintenance",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/maintenance/1",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": 1,\n  \"name\": \"Updated Oil Change\",\n  \"type\": \"engineHours\",\n  \"start\": 0,\n  \"period\": 150,\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete Maintenance",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/maintenance/1",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "19 - Orders",
+      "requests": [
+        {
+          "name": "Get All Orders",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/orders",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Create Order",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/orders",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"uniqueId\": \"ORDER001\",\n  \"description\": \"Delivery order\",\n  \"fromAddress\": \"123 Main St, City\",\n  \"toAddress\": \"456 Oak Ave, City\",\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Update Order",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/orders/1",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": 1,\n  \"uniqueId\": \"ORDER001\",\n  \"description\": \"Updated delivery order\",\n  \"fromAddress\": \"123 Main St, City\",\n  \"toAddress\": \"456 Oak Ave, City\",\n  \"attributes\": {}\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete Order",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/orders/1",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "20 - Password",
+      "requests": [
+        {
+          "name": "Change Password",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/password",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ],
+          "body": {
+            "mode": "urlencoded",
+            "urlencoded": [
+              {
+                "name": "oldPassword",
+                "value": "oldpassword",
+                "enabled": true
+              },
+              {
+                "name": "newPassword",
+                "value": "newpassword",
+                "enabled": true
+              }
+            ]
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/password/reset",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ],
+          "body": {
+            "mode": "urlencoded",
+            "urlencoded": [
+              {
+                "name": "email",
+                "value": "user@example.com",
+                "enabled": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "Update Password",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/password/update",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ],
+          "body": {
+            "mode": "urlencoded",
+            "urlencoded": [
+              {
+                "name": "key",
+                "value": "password_reset_key",
+                "enabled": true
+              },
+              {
+                "name": "password",
+                "value": "newpassword",
+                "enabled": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "Generate Password Key",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/generatePasswordKey",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            }
+          ],
+          "body": {
+            "mode": "urlencoded",
+            "urlencoded": [
+              {
+                "name": "email",
+                "value": "user@example.com",
+                "enabled": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "21 - Audit",
+      "requests": [
+        {
+          "name": "Get Audit Log",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/audit?userId={{userId}}&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "22 - Contacts",
+      "requests": [
+        {
+          "name": "Get All Contacts",
+          "type": "http",
+          "method": "GET",
+          "url": "{{baseUrl}}/contacts",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Create Contact",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/contacts",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"name\": \"Emergency Contact\",\n  \"phone\": \"+1234567890\",\n  \"email\": \"contact@example.com\"\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Update Contact",
+          "type": "http",
+          "method": "PUT",
+          "url": "{{baseUrl}}/contacts/1",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"id\": 1,\n  \"name\": \"Updated Contact\",\n  \"phone\": \"+1234567890\",\n  \"email\": \"updated@example.com\"\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        },
+        {
+          "name": "Delete Contact",
+          "type": "http",
+          "method": "DELETE",
+          "url": "{{baseUrl}}/contacts/1",
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "23 - Notification Push",
+      "requests": [
+        {
+          "name": "Register Push Token",
+          "type": "http",
+          "method": "POST",
+          "url": "{{baseUrl}}/notifications/push",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "json",
+            "json": "{\n  \"token\": \"FCM_TOKEN_HERE\",\n  \"type\": \"fcm\"\n}"
+          },
+          "auth": {
+            "type": "basic",
+            "basic": {
+              "username": "{{email}}",
+              "password": "{{password}}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,32 @@
+meta {
+  name: Create Notification
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/notifications
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "type": "geofenceEnter",
+  "description": "Enter office geofence",
+  "always": false,
+  "notificators": "web,mail",
+  "calendarId": null,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

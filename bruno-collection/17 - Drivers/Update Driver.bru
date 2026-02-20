@@ -1,0 +1,30 @@
+meta {
+  name: Update Driver
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/drivers/1
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "id": 1,
+  "name": "Updated Driver Name",
+  "uniqueId": "DRIVER001",
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

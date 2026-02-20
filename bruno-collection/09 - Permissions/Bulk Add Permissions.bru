@@ -1,0 +1,34 @@
+meta {
+  name: Bulk Add Permissions
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/permissions/bulk
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  [
+  {
+    "userId": {{userId}},
+    "deviceId": {{deviceId}}
+  },
+  {
+    "userId": {{userId}},
+    "groupId": 1
+  }
+]
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

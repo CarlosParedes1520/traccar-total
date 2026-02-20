@@ -1,0 +1,16 @@
+meta {
+  name: Delete Notification
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/notifications/1
+  auth: basic
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

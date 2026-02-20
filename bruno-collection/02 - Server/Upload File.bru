@@ -1,0 +1,21 @@
+meta {
+  name: Upload File
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/server/file/custom/file.txt
+  body: file
+  auth: basic
+}
+
+headers {
+  Content-Type: text/plain
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

@@ -1,0 +1,56 @@
+meta {
+  name: Login - Create Session
+  type: http
+  seq: 1
+}
+
+docs {
+# POST /api/session - Login
+
+## ¿Qué hace?
+- Valida email/password
+- Crea una sesión HTTP (cookie JSESSIONID)
+- Devuelve datos del usuario
+
+## En navegador:
+El navegador guarda automáticamente la cookie JSESSIONID
+y la envía en todas las peticiones siguientes.
+
+## En Bruno:
+Bruno NO guarda cookies automáticamente.
+Después de este login, usa Basic Auth en los demás requests.
+
+## Alternativa:
+Puedes generar un token con POST /api/session/token
+y usarlo en lugar de Basic Auth.
+}
+
+post {
+  url: {{baseUrl}}/session
+  body: form-urlencoded
+  auth: none
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+  Accept: */*
+  Origin: http://localhost:8082
+  Referer: http://localhost:8082/login
+}
+
+body:form-urlencoded {
+  email: {{email}}
+  password: {{password}}
+}
+
+tests {
+  bruno.test('Status is 200', () => {
+  expect(res.getStatus()).toBe(200);
+});
+
+bruno.test('Response has user data', () => {
+  const body = res.getBody();
+  expect(body).toHaveProperty('id');
+  expect(body).toHaveProperty('email');
+});
+}

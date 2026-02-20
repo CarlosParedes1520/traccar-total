@@ -1,0 +1,30 @@
+meta {
+  name: Bulk Remove Permissions
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}/permissions/bulk
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  [
+  {
+    "userId": {{userId}},
+    "deviceId": {{deviceId}}
+  }
+]
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

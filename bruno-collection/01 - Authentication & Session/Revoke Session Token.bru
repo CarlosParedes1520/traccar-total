@@ -1,0 +1,25 @@
+meta {
+  name: Revoke Session Token
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/session/token/revoke
+  body: form-urlencoded
+  auth: basic
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded
+}
+
+body:form-urlencoded {
+  token: YOUR_TOKEN_HERE
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+

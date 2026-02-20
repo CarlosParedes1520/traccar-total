@@ -1,0 +1,31 @@
+meta {
+  name: Create Geofence
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/geofences
+  body: json
+  auth: basic
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+  "name": "Office Area",
+  "description": "Main office geofence",
+  "area": "CIRCLE (40.7128 -74.0060, 100)",
+  "calendarId": null,
+  "attributes": {}
+}
+}
+
+auth:basic {
+  username: {{email}}
+  password: {{password}}
+}
+
