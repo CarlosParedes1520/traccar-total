@@ -127,6 +127,20 @@ Tiempo: ~50-100ms
 Impacto: Mínimo en la BD, sin problemas de concurrencia
 ```
 
+## 🔒 Fix adicional: POST no debe tocar hashedPassword/salt
+
+Aunque el POST ya usaba `Columns.Include("attributes", "fcmtoken")`, para evitar cualquier riesgo de que el usuario quede dañado (hashedPassword/salt en NULL y no poder ingresar):
+
+1. **Ya no se usa el usuario de `permissionsService.getUser()` para escribir.** Ese usuario puede venir de caché y en algunos flujos tener campos sensibles sin cargar.
+2. **Se carga un usuario “mínimo” solo con los campos que se van a actualizar:**  
+   `storage.getObject(User.class, new Request(new Columns.Include("id", "attributes", "fcmtoken"), ...))`.  
+   Así el objeto que se pasa a `updateObject` solo tiene `id`, `attributes` y `fcmtoken`; el resto (incluido hashedPassword/salt) no interviene en esta ruta.
+3. **Solo se hace UPDATE de `attributes` y `fcmtoken`.** Las credenciales nunca se tocan en este endpoint.
+
+Con esto se evita tener que ejecutar `fix-admin-user.sh` después de registrar el token de push.
+
+---
+
 ## 🎯 Conclusión
 
 El endpoint `/api/notifications/push` causaba problemas con usuarios porque:

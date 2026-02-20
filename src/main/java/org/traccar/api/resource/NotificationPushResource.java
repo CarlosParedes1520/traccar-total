@@ -136,46 +136,52 @@ public class NotificationPushResource extends BaseResource {
                     .build();
         }
 
-        User user = permissionsService.getUser(getUserId());
-        if (user == null) {
+        long userId = getUserId();
+        if (userId <= 0) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
         String token = request.token.trim();
         String type = request.type != null ? request.type.toLowerCase() : "fcm";
 
-        // Handle FCM token registration
-        if ("fcm".equals(type)) {
-            // Add token to notificationTokens attribute or set fcmtoken
-            if (user.hasAttribute("notificationTokens")) {
-                String existingTokens = user.getString("notificationTokens");
-                List<String> tokens = new java.util.ArrayList<>(
-                        java.util.Arrays.asList(existingTokens.split("[, ]")));
-                if (!tokens.contains(token)) {
-                    tokens.add(token);
-                    user.set("notificationTokens", String.join(",", tokens));
-                }
-            } else {
-                user.set("notificationTokens", token);
-            }
-            
-            // Also set fcmtoken for backward compatibility
-            if (user.getFcmtoken() == null || user.getFcmtoken().isEmpty()) {
-                user.setFcmtoken(token);
-            }
-        } else {
+        if (!"fcm".equals(type)) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Map.of("error", "Unsupported token type: " + type))
                     .build();
         }
 
-        // Update user in storage
-        storage.updateObject(user, new Request(
+        // Load ONLY the columns we will update (id, attributes, fcmtoken).
+        // This avoids ever passing a User that has null hashedPassword/salt into
+        // any update path, preventing accidental overwrite of credentials.
+        User userToUpdate = storage.getObject(User.class, new Request(
+                new Columns.Include("id", "attributes", "fcmtoken"),
+                new Condition.Equals("id", userId)));
+        if (userToUpdate == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        // Merge token into attributes (notificationTokens) and fcmtoken
+        if (userToUpdate.hasAttribute("notificationTokens")) {
+            String existing = userToUpdate.getString("notificationTokens");
+            List<String> tokens = new java.util.ArrayList<>(
+                    java.util.Arrays.asList(existing.split("[, ]")));
+            if (!tokens.contains(token)) {
+                tokens.add(token);
+                userToUpdate.set("notificationTokens", String.join(",", tokens));
+            }
+        } else {
+            userToUpdate.set("notificationTokens", token);
+        }
+        if (userToUpdate.getFcmtoken() == null || userToUpdate.getFcmtoken().isEmpty()) {
+            userToUpdate.setFcmtoken(token);
+        }
+
+        // Update ONLY attributes and fcmtoken. Never touch hashedPassword/salt.
+        storage.updateObject(userToUpdate, new Request(
                 new Columns.Include("attributes", "fcmtoken"),
-                new Condition.Equals("id", user.getId())));
-        
-        // Invalidate cache
-        cacheManager.invalidateObject(true, User.class, user.getId(), ObjectOperation.UPDATE);
+                new Condition.Equals("id", userId)));
+
+        cacheManager.invalidateObject(true, User.class, userId, ObjectOperation.UPDATE);
 
         return Response.noContent().build();
     }
